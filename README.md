@@ -3,7 +3,9 @@ Python script to download differen file with same PREFIX and SUFFIX, but differe
 
 ### Script usage:
 
-main.py <PREFIX> <SUFFIX> <StartNum> <EndNum> [[option]]
+```
+main.py <PREFIX> <SUFFIX> <StartNum> <EndNum> [option]
+```
 
 Per ora è in grado di girare solo con linux
 
