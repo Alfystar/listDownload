@@ -14,6 +14,7 @@ endNum = 0
 
 # Parametri Facoltativi
 pWget = 5
+digit = 2
 
 
 def help():
@@ -25,28 +26,47 @@ def help():
     print("\tendNum:= Ultimo episodio da scaricare (Compreso)")
     print("[Options]:")
     print("\t\t -p --parallelWget <Number> Quante istanze di wget in parallelo, 5 default")
-    print("\t\t -d --dirSave <path> Path su cui salvare, di default la corrente")
+    print("\t\t -o --outSave <path> Path su cui salvare, di default la corrente")
+    print("\t\t -d --digit <numDigit> Numero di caratteri obbligatori, default 2")
 
-    print("Your command")
+    print("You type the command:")
     print(sys.argv[1:])  # Press Ctrl+8 to toggle the breakpoint.
     exit(-1)
 
 
-def optionSet(op, val):
+def optionSet(argList):
+    # Ritorna la subList
+    op = argList[0]
+    
     if op == "-p" or op == "--parallelWget":
+        val = argList[1]
         if (val.isnumeric()):
             global pWget
             pWget = int(val)
             print("pWget assegnata pari a: "+ str(pWget))
+            return argList[2:]
         else:
             help()
 
-    elif op == "-d" or op == "--dirSave":
+    elif op == "-o" or op == "--outSave":
+        val = argList[1]
+
         if not os.path.exists(val):
             os.makedirs(val)
             os.chdir(val)
         else:
             os.chdir(val)
+        return argList[2:]
+    
+    elif op == "-d" or op == "--digit ":
+        val = argList[1]
+        if (val.isnumeric()):
+            global digit
+            digit = int (val)
+            print("digit assegnata pari a: "+ str(digit))
+            return argList[2:]
+        else:
+            help()
 
     else:
         help()
@@ -55,13 +75,9 @@ def optionSet(op, val):
 def son(url, i):
     print("\nDownload: " + url + "\n\t Start " + str(i))
     os.system("xterm -e bash -c '"+"wget " + url+"'")
-    #os.system("wget --quiet " + url)
-    #print("wget -no-verbose " + url)
-    print("\nDownload: " + url + "\n\t END " + str(i))
-    #time.sleep(1)
+    print("\n\t END " + str(i))
 
-    os.system("exit")
-
+    #os.system("exit")
     exit(0)
 
 
@@ -70,10 +86,7 @@ def main():
     if (len(sys.argv) < 5):
         help()
 
-    global baseUrl
-    global endUrl
-    global startNum
-    global endNum
+    global baseUrl, endUrl, startNum, endNum
 
     baseUrl = str(sys.argv[1])
     endUrl = str(sys.argv[2])
@@ -89,26 +102,28 @@ def main():
     # Quando ci saranno attivo le opzioni
     if len(sys.argv) > 5:
         print("dentro")
-        for i in range(0, len(sys.argv[5:]), 2):  # Salto di 2 perchè ci sono le opzioni
-            print(sys.argv[5 + i:5 + i + 2])
-            optionSet(sys.argv[5 + i], sys.argv[5 + i + 1])
+        argList = sys.argv[5:]
+        while (len(argList)>0):
+            argList = optionSet(argList)
 
+    # Inizio la procedura
     start_time = datetime.now() 
 
     tokenActive = 0
-    print("pWget letta pari a: " + str(pWget))
+    
     for i in range(startNum, endNum+1):
         tokenActive += 1
         pid = os.fork()
         if pid == 0:    #child process
-
-            son(baseUrl + str(f"{i:02d}") + endUrl, i)
+            num = "{num:0{dig}d}".format(dig=digit,num=i)
+            son(baseUrl + num + endUrl , i)
         else: # We are in the parent process.
             if(tokenActive<pWget):
                 continue
             else:
                 os.wait()
                 tokenActive -= 1
+    
     while(tokenActive!=0):
         os.wait()
         tokenActive -= 1
@@ -116,8 +131,6 @@ def main():
     time_elapsed = datetime.now() - start_time 
     print("## Downloads end ##")
     print('Total Time (hh:mm:ss.ms) {}'.format(time_elapsed))
-
-
 
 
 # Press the green button in the gutter to run the script.
