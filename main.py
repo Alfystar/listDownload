@@ -4,7 +4,7 @@ import sys
 import os
 import time
 from datetime import datetime 
-
+import platform
 
 # Parametri Obbligatori
 baseUrl = ""
@@ -71,10 +71,38 @@ def optionSet(argList):
     else:
         help()
 
+def systemConfig(argv):
+    global startNum, endNum
+    if (len(argv) < 5):
+        help()
+
+    global baseUrl, endUrl, startNum, endNum
+
+    baseUrl = str(argv[1])
+    endUrl = str(argv[2])
+    if argv[3].isnumeric() and argv[4].isnumeric():
+        startNum = int(argv[3])
+        endNum = int(argv[4])
+        if (endNum < startNum):
+            help()
+    else:
+        help()
+
+    # Quando ci saranno attivo le opzioni
+    if len(argv) > 5:
+        argList = argv[5:]
+        while (len(argList) > 0):
+            argList = optionSet(argList)
+
 
 def son(url, i):
     print("\nDownload: " + url + "\n\t Start " + str(i))
-    os.system("xterm -e bash -c '"+"wget " + url+"'")
+    if (platform.system()=="Linux"):
+        os.system("xterm -e bash -c '"+"wget " + url+"'")
+    elif (platform.system()=="Windowd"):
+        os.system("Invoke-WebRequest -Uri "+ url)
+    else:
+        print("OS not Supported")
     print("\n\t END " + str(i))
 
     #os.system("exit")
@@ -82,29 +110,7 @@ def son(url, i):
 
 
 def main():
-    global startNum, endNum
-    if (len(sys.argv) < 5):
-        help()
-
-    global baseUrl, endUrl, startNum, endNum
-
-    baseUrl = str(sys.argv[1])
-    endUrl = str(sys.argv[2])
-    if sys.argv[3].isnumeric() and sys.argv[4].isnumeric():
-        startNum = int(sys.argv[3])
-        endNum = int(sys.argv[4])
-        if (endNum < startNum):
-            help()
-
-    else:
-        help()
-
-    # Quando ci saranno attivo le opzioni
-    if len(sys.argv) > 5:
-        print("dentro")
-        argList = sys.argv[5:]
-        while (len(argList)>0):
-            argList = optionSet(argList)
+    systemConfig(sys.argv)
 
     # Inizio la procedura
     start_time = datetime.now() 
