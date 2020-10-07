@@ -31,15 +31,17 @@ def helpMan():
     print("\tendUrl:= Second part of the url (after XX number)")
     print("\tstartNum:= First index included")
     print("\tendNum:= Last index (included)")
-    print("\n Is also possible setup multiple download in a File:")
-    print("./parallelDownload.py -i <File List> [option]")
-
     print("[Options]:")
     print("\t\t -p --parallelDownload <int> Number of concurrency downdload (default = 5)")
     print("\t\t -o --outSave <path> Saving directory Path (default = ./parallelDowndload)")
     print("\t\t -d --digit <digit> Number of digit (default = 2)")
     print("\t\t --quiet no show all data")
 
+    print("\n Is also possible setup multiple download in a File:")
+    print("./parallelDownload.py -i <File List> [Options All]")
+    print("[Options All]:")
+    print("\t\t -p --parallelDownload <int> Number of concurrency downdload (default = 5)")
+    print("\t\t --quiet no show all data")
     print("\n[File List syntax]:")
     print("For EVERY LINE the syntax MUST be is:")
     print("<baseUrl> <endUrl> <startNum> <endNum> [Options file]")
@@ -61,11 +63,11 @@ def son(dataList):
     name = dataList[1]
     savePath = dataList[2]
 
-    time.sleep(random() / 100.0)  # per permettere di "deallinearsi al passo successivo
-    if not os.path.exists(savePath):
+    # time.sleep(random() / 100.0)  # per permettere di "deallinearsi al passo successivo
+    try:
         os.makedirs(savePath)
         os.chdir(savePath)
-    else:
+    except FileExistsError as e:
         os.chdir(savePath)
 
     print("\nDownload: " + url + "\n\t Start " + name)
@@ -105,6 +107,7 @@ def urlListInit():
             pDW = argvListParse.pDW
         if argvListParse.quite is not None:
             quite = argvListParse.quite
+
 
         # Using readlines()
         file1 = open(fileList, 'r')
@@ -150,8 +153,8 @@ def urlListInit():
 def main():
     urlListInit()
 
-    print("The download start with " + pDW + " parallel Connection")
-    print("Output quiet = " + quite)
+    print("The download start with " + str(pDW) + " parallel Connection")
+    print("Output quiet = " + str(quite))
 
     # Start parallel procedure
     start_time = datetime.now()
