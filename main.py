@@ -99,7 +99,7 @@ def son(url, i):
     print("\nDownload: " + url + "\n\t Start " + str(i))
     if (platform.system()=="Linux"):
         os.system("xterm -e bash -c '"+"wget " + url+"'")
-    elif (platform.system()=="Windowd"):
+    elif (platform.system()=="Windows"):
         os.system("Invoke-WebRequest -Uri "+ url)
     else:
         print("OS not Supported")
@@ -116,7 +116,7 @@ def main():
     start_time = datetime.now() 
 
     tokenActive = 0
-    
+    nDownload = 0;
     for i in range(startNum, endNum+1):
         tokenActive += 1
         pid = os.fork()
@@ -124,6 +124,7 @@ def main():
             num = "{num:0{dig}d}".format(dig=digit,num=i)
             son(baseUrl + num + endUrl , i)
         else: # We are in the parent process.
+            nDownload += 1
             if(tokenActive<pWget):
                 continue
             else:
@@ -137,6 +138,7 @@ def main():
     time_elapsed = datetime.now() - start_time 
     print("## Downloads end ##")
     print('Total Time (hh:mm:ss.ms) {}'.format(time_elapsed))
+    print('Mean Time (hh:mm:ss.ms) {}'.format(time_elapsed/(nDownload)))
 
 
 # Press the green button in the gutter to run the script.
