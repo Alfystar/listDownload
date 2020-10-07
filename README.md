@@ -4,6 +4,13 @@ This is a Python script to download differen file with same PREFIX and SUFFIX, b
 ### Script usage:
 
 ```
+./parallelDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Options]
+        baseUrl:= First parto of the url (until XX number)
+        endUrl:= Second parto of the url (after XX number)
+        startNum:= First index included
+        endNum:= Last index (included)
+
+ Is also possible setup multiple download in a File:
 ./parallelDownload.py -i <File List> [option]
 [Options]:
                  -p --parallelDownload <int> Number of concurrency downdload (default = 5)
@@ -17,6 +24,7 @@ For EVERY LINE the syntax MUST be is:
 [Options file] (in case of missing, the global option will be used:
                  -o --outSave <path> Saving directory Path (default = see global)
                  -d --digit <digit> Number of digit (default = see global)
+
 ```
 
 ### Capability
