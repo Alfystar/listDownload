@@ -4,43 +4,31 @@
 # Test file:
 # -i test.txt -o testDir
 
-
 import sys
 import os
-import time
-from datetime import datetime
 import platform
-from random import random
-from ArgParse import *
+import time
 import shlex
+from datetime import datetime
+from random import random
 
-# Parametri Obbligatori
-# baseUrl = ""
-# endUrl = ""
-# startNum = 0
-# endNum = 0
+# Personal Lib
+from ArgParse import *
 
 # Parametri Facoltativi, valori di default
 pDW = 5
 quite = False
 fileList = ""
 
-# Parametri Globali
-globDigit = 2
-globOutDir = "./parallelDowndload/"
-
 # Url List
 urlListParam = []  # [url, name, savePath]
 
 
-# todo: Add install option (inclide in the env of the system)
-# todo: Get file params with more Downloads
-
-def help():
+def helpMan():
     print("correct syntax is:")
     print("./parallelDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Options]")
-    print("\tbaseUrl:= First parto of the url (until XX number)")
-    print("\tendUrl:= Second parto of the url (after XX number)")
+    print("\tbaseUrl:= First part of the url (until XX number)")
+    print("\tendUrl:= Second part of the url (after XX number)")
     print("\tstartNum:= First index included")
     print("\tendNum:= Last index (included)")
     print("\n Is also possible setup multiple download in a File:")
@@ -81,7 +69,7 @@ def son(dataList):
         os.chdir(savePath)
 
     print("\nDownload: " + url + "\n\t Start " + name)
-    if (platform.system() == "Linux"):
+    if platform.system() == "Linux":
         if quite:
             os.system("wget " + url + " --quiet")
         else:
@@ -96,28 +84,25 @@ def son(dataList):
 
 def urlListInit():
     """
-    Crea la lista degli url che devono essere scaricati, o dal file o da linea di comando
+    Make the urlList in base of the command line params
     :return:
     """
-    global urlListParam, pDW, globDigit, globOutDir, quite, fileList
+    global urlListParam, pDW, quite, fileList
 
-    if "-i" in sys.argv:  # multiplo comando
+    if "-i" in sys.argv:
         index = sys.argv.index("-i")
         fileList = sys.argv[index + 1]
         subList = sys.argv[1:index] + sys.argv[index + 2:]
+        argvListParse = 0
         try:
             argvListParse = ArgListParse(subList)
         except Exception as e:
             print("Oops!", str(e), "occurred.")
-            help()
+            helpMan()
 
         # Estraggo i parametri funzionali
         if argvListParse.pDW is not None:
             pDW = argvListParse.pDW
-        if argvListParse.digit is not None:
-            globDigit = argvListParse.digit
-        if argvListParse.outDir is not None:
-            globOutDir = argvListParse.outDir
         if argvListParse.quite is not None:
             quite = argvListParse.quite
 
@@ -130,37 +115,45 @@ def urlListInit():
         for line in Lines:
             list_of_lists.append(shlex.split(line))
 
+        argvParseFile = 0
         for line in list_of_lists:
             try:
-                argvParse = ArgParse(line)
+                argvParseFile = ArgParse(line)
             except Exception as e:
                 print("Oops!", str(e), "occurred.")
                 print(line)
-                help()
+                helpMan()
 
         # Estraggo i parametri funzionali
-        urlListParam += argvParse.urlParam
+        urlListParam += argvParseFile.urlParam
 
     else:  # Comando Singolo
         if len(sys.argv) < 5:
-            help()
+            helpMan()
+
+        argvParseTerminal = 0
         try:
-            argvParse = ArgParse(sys.argv[1:])
+            argvParseTerminal = ArgParse(sys.argv[1:])
         except Exception as e:
             print("Oops!", str(e), "occurred.")
-            help()
+            helpMan()
 
         # Estraggo i parametri funzionali
-        urlListParam += argvParse.urlParam
+        urlListParam += argvParseTerminal.urlParam
 
-        if argvParse.pDW is not None:
-            pDW = argvParse.pDW
-        if argvParse.quite is not None:
-            quite = argvParse.quite
+        if argvParseTerminal.pDW is not None:
+            pDW = argvParseTerminal.pDW
+        if argvParseTerminal.quite is not None:
+            quite = argvParseTerminal.quite
+
 
 def main():
     urlListInit()
-    # Inizio la procedura
+
+    print("The download start with " + pDW + " parallel Connection")
+    print("Output quiet = " + quite)
+
+    # Start parallel procedure
     start_time = datetime.now()
 
     tokenActive = 0
@@ -188,6 +181,5 @@ def main():
     print('Mean Time (hh:mm:ss.ms) {}'.format(time_elapsed / nDownload))
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()

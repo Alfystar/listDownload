@@ -21,9 +21,9 @@ This is a Python script to download differen file with same PREFIX and SUFFIX, b
 [File List syntax]:
 For EVERY LINE the syntax MUST be is:
 <baseUrl> <endUrl> <startNum> <endNum> [Options file]
-[Options file] (in case of missing, the global option will be used:
-                 -o --outSave <path> Saving directory Path (default = see global)
-                 -d --digit <digit> Number of digit (default = see global)
+[Options file] (in case of missing, the default option will be used:
+                 -o --outSave <path> Saving directory Path (default = ./parallelDowndload)
+                 -d --digit <digit> Number of digit (default = 2)
 
 ```
 

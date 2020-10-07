@@ -1,17 +1,17 @@
 class Parser:
     """
-        Classe con la responsabilità di leggere una linea ed estrarne i parametri
-        E se sono compatibili, creare la lista degli Url
-        """
-    # Parametri Obbligatori
+    The Parser class contain data and function to read the parameter and create the url
+    The 2 son class are used for the specific purpose
+    """
+    # Prameter Mandatory
     baseUrl = None
     endUrl = None
     startNum = None
     endNum = None
 
     # Parametri Facoltativi
-    pDW = None
-    digit = None
+    pDW = 5
+    digit = 2
     outDir = "./parallelDowndload/"
     quite = None
 
@@ -19,8 +19,7 @@ class Parser:
     urlParam = []  # [url, name, savePath]
 
     def __init__(self):
-        print("Costruttore di default")
-        return self
+        return
 
     def generateList(self):
         if self.baseUrl is None or self.endUrl is None or self.startNum is None or self.endNum is None:
@@ -97,23 +96,19 @@ class Parser:
 
 
 class ArgParse(Parser):
-
+    """
+    The argParse is used to parse boot Mandatory and optional line of the command
+    """
 
     def __init__(self, argv):
-        """
-        Prende una lista di Argv (dal terminale o dal file) e ne estrae i valori
-        Se si vuole avere la lista chiamare generateList
-        :param argv:
-        :return: Null, set the class attribute
-        """
-        #super().__init__(self)
+        super().__init__()
         self.systemConfig(argv)
         self.generateList()
 
-
-
-
 class ArgListParse(Parser):
+    """
+    The ArgListParse is used to parse only che optional argument
+    """
     def __init__(self, listArgv):
-        #super().__init__(self)
+        super().__init__()
         super().listArgvParse(listArgv)
