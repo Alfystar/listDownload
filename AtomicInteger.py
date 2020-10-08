@@ -1,5 +1,7 @@
 import threading
-#todo: mischiare con i semafori magari per fare i blocchi sui valori...
+
+
+# todo: mischiare con i semafori magari per fare i blocchi sui valori...
 
 class AtomicInteger:
     def __init__(self, value=0):
@@ -15,7 +17,6 @@ class AtomicInteger:
         with self._lock:
             self._value -= 1
             return self._value
-
 
     @property
     def value(self):
