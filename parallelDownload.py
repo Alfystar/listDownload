@@ -125,6 +125,7 @@ def urlListInit():
 tokenActive = AtomicInteger(0)
 semActive = threading.Semaphore()
 
+
 def thread_function(dataList):
     """
     :param dataList: #list: [url, name, savePath]
@@ -159,10 +160,10 @@ def thread_function(dataList):
             cmd = "xterm -e bash -c '" + "wget " + url + " --directory-prefix=\"" + savePath + "\"" + "'"
             # print(cmd)
             os.system(cmd)
-    elif (platform.system() == "Windows"):
+    elif platform.system() == "Windows":
         fileName = savePath + "/" + name
         cmd = "Invoke-WebRequest -Uri " + url + " -OutFile \"" + fileName + "\""
-        #print("powershell.exe " + cmd)
+        # print("powershell.exe " + cmd)
         os.system("powershell.exe " + cmd)
     else:
         print("OS not Supported")
