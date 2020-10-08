@@ -7,15 +7,17 @@
 import sys
 import os
 import platform
-import time
 import shlex
+import time
 from datetime import datetime
-from random import random
+import threading
 
 # Personal Lib
 from ArgParse import *
+from AtomicInteger import AtomicInteger
 
 # Parametri Facoltativi, valori di default
+
 pDW = 5
 quite = False
 fileList = ""
@@ -54,36 +56,6 @@ def helpMan():
     exit(-1)
 
 
-def son(dataList):
-    """
-    :param dataList: #list: [url, name, savePath]
-    :return:
-    """
-    url = dataList[0]
-    name = dataList[1]
-    savePath = dataList[2]
-
-    # time.sleep(random() / 100.0)  # per permettere di "deallinearsi al passo successivo
-    try:
-        os.makedirs(savePath)
-        os.chdir(savePath)
-    except FileExistsError as e:
-        os.chdir(savePath)
-
-    print("\nDownload: " + url + "\n\t Start " + name)
-    if platform.system() == "Linux":
-        if quite:
-            os.system("wget " + url + " --quiet")
-        else:
-            os.system("xterm -e bash -c '" + "wget " + url + "'")
-    # elif (platform.system() == "Windows"):
-    #     os.system("Invoke-WebRequest -Uri " + url)
-    else:
-        print("OS not Supported")
-    print("\n\t END " + name)
-    exit(0)
-
-
 def urlListInit():
     """
     Make the urlList in base of the command line params
@@ -107,7 +79,6 @@ def urlListInit():
             pDW = argvListParse.pDW
         if argvListParse.quite is not None:
             quite = argvListParse.quite
-
 
         # Using readlines()
         file1 = open(fileList, 'r')
@@ -150,6 +121,54 @@ def urlListInit():
             quite = argvParseTerminal.quite
 
 
+# Thread active counter
+tokenActive = AtomicInteger(0)
+semActive = threading.Semaphore()
+
+def thread_function(dataList):
+    """
+    :param dataList: #list: [url, name, savePath]
+    :return:
+    """
+    url = dataList[0]
+    name = dataList[1]
+    savePath = dataList[2]
+
+    try:
+        os.makedirs(savePath)
+    except FileExistsError:
+        # Nop all Ok
+        pass
+    except Exception as e:
+        print("[thread_function] makedirs get Error:", e)
+
+    # try:
+    #     os.makedirs(savePath)
+    #     os.chdir(savePath)
+    # except FileExistsError as e:
+    #     os.chdir(savePath)
+
+    print("\nDownload: " + url + "\n\t Start " + name)
+    if platform.system() == "Linux":
+        if quite:
+            cmd = "wget " + url + " --directory-prefix=\"" + savePath + "\"" + " --quiet"
+            # print(cmd)
+            os.system(cmd)
+        else:
+            cmd = "xterm -e bash -c '" + "wget " + url + " --directory-prefix=\"" + savePath + "\"" + "'"
+            # print(cmd)
+            os.system(cmd)
+    # elif (platform.system() == "Windows"):
+    #     os.system("Invoke-WebRequest -Uri " + url)
+    else:
+        print("OS not Supported")
+    print("\n\t END " + name)
+
+    global tokenActive, semActive
+    tokenActive.dec()
+    semActive.release()
+
+
 def main():
     urlListInit()
 
@@ -159,24 +178,19 @@ def main():
     # Start parallel procedure
     start_time = datetime.now()
 
-    tokenActive = 0
+    global tokenActive, semActive
+    tokenActive = AtomicInteger()
+    semActive = threading.Semaphore(pDW)
     nDownload = 0
     for dwParam in urlListParam:
-        tokenActive += 1
-        pid = os.fork()
-        if pid == 0:  # child process
-            son(dwParam)
-        else:  # We are in the parent process.
-            nDownload += 1
-            if tokenActive < pDW:
-                continue
-            else:
-                os.wait()
-                tokenActive -= 1
+        semActive.acquire()
+        tokenActive.inc()
+        t = threading.Thread(target=thread_function, args=(dwParam,))
+        t.start()
+        nDownload += 1
 
-    while tokenActive != 0:
-        os.wait()
-        tokenActive -= 1
+    while tokenActive.value != 0:
+        time.sleep(1)
 
     time_elapsed = datetime.now() - start_time
     print("## Downloads end ##")
