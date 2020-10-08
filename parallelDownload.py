@@ -132,8 +132,9 @@ def thread_function(dataList):
     """
     url = dataList[0]
     name = dataList[1]
+    name = name.replace(" ", "_")
     savePath = dataList[2]
-
+    savePath = savePath.replace(" ", "_")
     try:
         os.makedirs(savePath)
     except FileExistsError:
@@ -158,8 +159,11 @@ def thread_function(dataList):
             cmd = "xterm -e bash -c '" + "wget " + url + " --directory-prefix=\"" + savePath + "\"" + "'"
             # print(cmd)
             os.system(cmd)
-    # elif (platform.system() == "Windows"):
-    #     os.system("Invoke-WebRequest -Uri " + url)
+    elif (platform.system() == "Windows"):
+        fileName = savePath + "/" + name
+        cmd = "Invoke-WebRequest -Uri " + url + " -OutFile \"" + fileName + "\""
+        #print("powershell.exe " + cmd)
+        os.system("powershell.exe " + cmd)
     else:
         print("OS not Supported")
     print("\n\t END " + name)

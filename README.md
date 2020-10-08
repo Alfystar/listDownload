@@ -30,6 +30,7 @@ For EVERY LINE the syntax MUST be is:
 ```
 
 ### Capability
+- Cross Platform, boot Linux and Windows
 - Real parallel download customizable
 - Parametric Digit of the number
 - Output direcory choosable and recursivly create
@@ -40,5 +41,10 @@ For EVERY LINE the syntax MUST be is:
 - wget (default)
 - xterm (default)
 
+#### Linux dependace
+- Invoke-WebRequest(default)
+
+
 ### Future Work
-Enable file list to program multiple download
+- Multiple terminal for Windows
+-Gui
