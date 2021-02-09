@@ -62,9 +62,13 @@ class Parser:
             else:
                 raise Exception("digit Incorrect")
 
-        elif op == "--quiet":
+        elif op == "-q" or op == "--quiet":
             self.quite = True
             return argList[1:]
+        elif op == "-v" or op == "--verbose":
+            self.quite = False
+            return argList[1:]
+
         else:
             raise Exception("Params not reconize")
 
@@ -105,10 +109,12 @@ class ArgParse(Parser):
         self.systemConfig(argv)
         self.generateList()
 
+
 class ArgListParse(Parser):
     """
     The ArgListParse is used to parse only che optional argument
     """
+
     def __init__(self, listArgv):
         super().__init__()
         super().listArgvParse(listArgv)

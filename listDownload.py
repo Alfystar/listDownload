@@ -18,8 +18,8 @@ from AtomicInteger import AtomicInteger
 
 # Parametri Facoltativi, valori di default
 
-pDW = 5
-quite = False
+pDW = 5  # Prarallel Download
+quite = True  # Xterm Support Terminal
 fileList = ""
 
 # Url List
@@ -28,7 +28,7 @@ urlListParam = []  # [url, name, savePath]
 
 def helpMan():
     print("correct syntax is:")
-    print("./parallelDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Options]")
+    print("./listDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Options]")
     print("\tbaseUrl:= First part of the url (until XX number)")
     print("\tendUrl:= Second part of the url (after XX number)")
     print("\tstartNum:= First index included")
@@ -37,10 +37,11 @@ def helpMan():
     print("\t\t -p --parallelDownload <int> Number of concurrency downdload (default = 5)")
     print("\t\t -o --outSave <path> Saving directory Path (default = ./parallelDowndload)")
     print("\t\t -d --digit <digit> Number of digit (default = 2)")
-    print("\t\t --quiet no show all data")
+    print("\t\t -q --quiet no show all data")
+    print("\t\t -v --verbose show all data by Xterm support Terminal")
 
     print("\n Is also possible setup multiple download in a File:")
-    print("./parallelDownload.py -i <File List> [Options All]")
+    print("./listDownload.py -i <File List> [Options All]")
     print("[Options All]:")
     print("\t\t -p --parallelDownload <int> Number of concurrency downdload (default = 5)")
     print("\t\t --quiet no show all data")
@@ -144,12 +145,6 @@ def thread_function(dataList):
     except Exception as e:
         print("[thread_function] makedirs get Error:", e)
 
-    # try:
-    #     os.makedirs(savePath)
-    #     os.chdir(savePath)
-    # except FileExistsError as e:
-    #     os.chdir(savePath)
-
     print("\nDownload: " + url + "\n\t Start " + name)
     if platform.system() == "Linux":
         if quite:
@@ -200,7 +195,7 @@ def main():
     time_elapsed = datetime.now() - start_time
     print("## Downloads end ##")
     print('Total Time (hh:mm:ss.ms) {}'.format(time_elapsed))
-    print('Mean Time (hh:mm:ss.ms) {}'.format(time_elapsed / nDownload))
+    print('Mean Time (hh:mm:ss.ms) {}'.format(time_elapsed * / nDownload))
 
 
 if __name__ == '__main__':
