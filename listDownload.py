@@ -196,7 +196,7 @@ def main():
     print("## Downloads end ##")
     print('Total Time (hh:mm:ss.ms) {}'.format(time_elapsed))
     print('Mean Time General(hh:mm:ss.ms) {}'.format(time_elapsed / nDownload))
-    print('Mean Time x Episode (hh:mm:ss.ms) {}'.format(time_elapsed * pDW / nDownload))
+    print('Mean Time x File (hh:mm:ss.ms) {}'.format(time_elapsed * pDW / nDownload))
 
 
 if __name__ == '__main__':
