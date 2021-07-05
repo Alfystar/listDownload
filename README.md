@@ -20,10 +20,10 @@ cd ~/Documents/ # or any where you want download
 git clone https://github.com/Alfystar/listDownload.git
 cd listDownload
 source install.sh
-source ~/.profile
+source ~/.profile # to add path on current terminal
 ```
 
-
+After reboot, the path will be add on all path in all environment, until the rebooting you have to execute in any new terminal `source ~/.profile`.
 
 ### Script usage:
 
@@ -97,7 +97,7 @@ listDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Options]
         endNum:= Last index (included)
 [Options]:
                  -p --parallelDownload <int> Number of concurrency downdload (default = 5)
-                 -o --outSave <path> Saving directory Path (default = ./parallelDowndload)
+                 -o --outSave <path> Saving directory Path (default = ./listDowndload)
                  -d --digit <digit> Number of digit (default = 2)
                  --quiet no show all data
 

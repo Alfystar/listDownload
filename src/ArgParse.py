@@ -12,7 +12,7 @@ class Parser:
     # Parametri Facoltativi
     pDW = 5
     digit = 2
-    outDir = "./parallelDowndload/"
+    outDir = "./listDowndload/"
     quite = None
 
     # Url List
@@ -23,7 +23,7 @@ class Parser:
 
     def generateList(self):
         if self.baseUrl is None or self.endUrl is None or self.startNum is None or self.endNum is None:
-            raise Exception("Parametri non riconosciti")
+            raise Exception("Parameter not valid")
 
         # Genero la lista degli url e le opzioni associate
         for i in range(self.startNum, self.endNum + 1):
@@ -42,13 +42,16 @@ class Parser:
         """
         op = argList[0]
 
+        if op == "#" or op == "//":     # comment detect and avoiding
+            return []   # Empty list
+
         if op == "-p" or op == "--parallelDownload":
             val = argList[1]
-            if (val.isnumeric()):
+            if val.isnumeric():
                 self.pDW = int(val)
                 return argList[2:]
             else:
-                raise Exception("parallelDownload Incorrect")
+                raise Exception("parallelDownload parameter are Incorrect")
 
         elif op == "-o" or op == "--outSave":
             self.outDir = argList[1]
@@ -56,11 +59,11 @@ class Parser:
 
         elif op == "-d" or op == "--digit ":
             val = argList[1]
-            if (val.isnumeric()):
+            if val.isnumeric():
                 self.digit = int(val)
                 return argList[2:]
             else:
-                raise Exception("digit Incorrect")
+                raise Exception("digit parameter are Incorrect")
 
         elif op == "-q" or op == "--quiet":
             self.quite = True
@@ -85,17 +88,17 @@ class Parser:
         if argv[2].isnumeric() and argv[3].isnumeric():
             self.startNum = int(argv[2])
             self.endNum = int(argv[3])
-            if (self.endNum < self.startNum):
-                raise Exception("Extreme number wrong")
+            if self.endNum < self.startNum:
+                raise Exception("The Order of the Number are wrong, please change the order")
         else:
-            raise Exception("Extreme number wrong")
+            raise Exception("The Number of the index aren't number!! please use the correct sintax")
 
-        argList = argv[4:]
+        argList = argv[4:]      # get the variable side of the string
         self.listArgvParse(argList)
 
     def listArgvParse(self, argList):
         # Quando ci saranno attivo le opzioni
-        while (len(argList) > 0):
+        while len(argList) > 0:
             argList = self.optionSet(argList)
 
 
@@ -106,6 +109,11 @@ class ArgParse(Parser):
 
     def __init__(self, argv):
         super().__init__()
+        self.__init__(argv, self.outDir)
+
+    def __init__(self, argv, defaultOutDir):
+        super().__init__()
+        self.outDir = defaultOutDir
         self.systemConfig(argv)
         self.generateList()
 

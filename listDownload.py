@@ -3,18 +3,18 @@
 # https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 1 41 -p 100 -d 1 --quiet
 # Test file:
 # -i test.txt -o testDir
-#TODO: correggere  -o testDir nel caso del file che non funziona
-import sys
+
 import os
 import platform
 import shlex
+import sys
+import threading
 import time
 from datetime import datetime
-import threading
 
 # Personal Lib
-from ArgParse import *
-from AtomicInteger import AtomicInteger
+from src.ArgParse import *
+from src.AtomicInteger import AtomicInteger
 
 # Parametri Facoltativi, valori di default
 
@@ -35,7 +35,7 @@ def helpMan():
     print("\tendNum:= Last index (included)")
     print("[Options]:")
     print("\t\t -p --listDownload <int> Number of concurrency downdload (default = 5)")
-    print("\t\t -o --outSave <path> Saving directory Path (default = ./parallelDowndload)")
+    print("\t\t -o --outSave <path> Saving directory Path (default = ./listDowndload)")
     print("\t\t -d --digit <digit> Number of digit (default = 2)")
     print("\t\t -q --quiet no show all data")
     print("\t\t -v --verbose show all data by Xterm support Terminal")
@@ -93,7 +93,7 @@ def urlListInit():
         argvParseFile = 0
         for line in list_of_lists:
             try:
-                argvParseFile = ArgParse(line)
+                argvParseFile = ArgParse(line, argvListParse.outDir)
             except Exception as e:
                 print("Oops!", str(e), "occurred.")
                 print(line)
