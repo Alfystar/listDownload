@@ -1,9 +1,9 @@
-#!/usr/bin/python3.8
+#!/usr/bin/python3
 # Test normal
 # https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 1 41 -p 100 -d 1 --quiet
 # Test file:
 # -i test.txt -o testDir
-
+#TODO: correggere  -o testDir nel caso del file che non funziona
 import sys
 import os
 import platform
@@ -28,7 +28,7 @@ urlListParam = []  # [url, name, savePath]
 
 def helpMan():
     print("correct syntax is:")
-    print("./listDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Options]")
+    print("listDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Options]")
     print("\tbaseUrl:= First part of the url (until XX number)")
     print("\tendUrl:= Second part of the url (after XX number)")
     print("\tstartNum:= First index included")
