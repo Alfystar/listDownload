@@ -10,17 +10,20 @@ if [[ $CURR_DIR != $REQ_CURR_DIR ]]; then
 	exit
 fi
 
-if [[ ${which apt} != "" ]]; then         # verify the presence of the apt manager
-	sudo apt update -y
-  sudo apt install git xterm python3 -y
-  sudo apt autoremove -y
-elif [[ ${which pacman} != "" ]]; then    # verify the presence of the pacman manager
-  sudo pacman -Syy
-  sudo pacman -S git xterm python3 -y
+APT_PATH=${which apt}
+PACMAN_PATH=${which pacman}
+
+if [[ $APT_PATH != "" ]]; then         # verify the presence of the apt manager
+    sudo apt update -y
+    sudo apt install git xterm python3 -y
+    sudo apt autoremove -y
+elif [[ $PACMAN_PATH != "" ]]; then    # verify the presence of the pacman manager
+    sudo pacman -Syy
+    sudo pacman -S git xterm python3 -y
 else
-  echo "This Install script wasn't think for your Pack Manager (Apt or Pacman), please install by yourself the following dependances:"
-  echo "install: git xterm python3"
-  echo "Thanks for the cooperation =}"
+    echo "This Install script wasn't think for your Pack Manager (Apt or Pacman), please install by yourself the following dependances:"
+    echo "install: git xterm python3"
+    echo "Thanks for the cooperation =}"
 fi
 
 sudo chmod +x listDownload.py
