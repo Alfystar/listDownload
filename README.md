@@ -44,9 +44,9 @@ More over, if you have to download form different site and with different macro 
 Create file named, for example, `test.txt`:
 
 ```
-https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 1 5 -p 100 -d 1 -o test1
-https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 10 15 -p 100 -d 1 -o "test 2"
-https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 20 25 -p 100 -d 1
+https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 1 5 -p 100 -d 1 -o test1         # Save in a directory named "test1"
+https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 10 15 -p 100 -d 1 -o "test 2"    # Save in a directory named with a space
+https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 20 25 -p 100 -d 1                # Save on the default name
 ```
 
 and next call the software (remember, `test.txt` is the path where the file is saved):
