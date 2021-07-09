@@ -10,8 +10,8 @@ if [[ $CURR_DIR != $REQ_CURR_DIR ]]; then
 	exit
 fi
 
-APT_PATH=${which apt}
-PACMAN_PATH=${which pacman}
+APT_PATH=$(which apt)
+PACMAN_PATH=$(which pacman)
 
 if [[ $APT_PATH != "" ]]; then         # verify the presence of the apt manager
     sudo apt update -y
