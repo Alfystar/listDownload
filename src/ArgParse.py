@@ -3,16 +3,16 @@ class Parser:
     The Parser class contain data and function to read the parameter and create the url
     The 2 son class are used for the specific purpose
     """
-    # Prameter Mandatory
+    # Parameter Mandatory
     baseUrl = None
     endUrl = None
     startNum = None
     endNum = None
 
-    # Parametri Facoltativi
+    # Faculty Parameter
     pDW = 5
     digit = 2
-    outDir = "./listDowndload/"
+    outDir = "./listDownload/"
     quite = None
 
     # Url List
@@ -106,10 +106,6 @@ class ArgParse(Parser):
     """
     The argParse is used to parse boot Mandatory and optional line of the command
     """
-
-    def __init__(self, argv):
-        super().__init__()
-        self.__init__(argv, self.outDir)
 
     def __init__(self, argv, defaultOutDir):
         super().__init__()

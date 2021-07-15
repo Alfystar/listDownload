@@ -16,12 +16,11 @@ from datetime import datetime
 from src.ArgParse import *
 from src.AtomicInteger import AtomicInteger
 
-# Parametri Facoltativi, valori di default
-
+# Parametri Facoltativi/Valori di default
 pDW = 5  # Prarallel Download
 quite = True  # Xterm Support Terminal
 fileList = ""
-
+defaultDownloadPath = "./listDownload/"
 # Url List
 urlListParam = []  # [url, name, savePath]
 
@@ -35,7 +34,7 @@ def helpMan():
     print("\tendNum:= Last index (included)")
     print("[Options]:")
     print("\t\t -p --listDownload <int> Number of concurrency downdload (default = 5)")
-    print("\t\t -o --outSave <path> Saving directory Path (default = ./listDowndload)")
+    print("\t\t -o --outSave <path> Saving directory Path (default = ./listDownload)")
     print("\t\t -d --digit <digit> Number of digit (default = 2)")
     print("\t\t -q --quiet no show all data")
     print("\t\t -v --verbose show all data by Xterm support Terminal")
@@ -108,7 +107,8 @@ def urlListInit():
 
         argvParseTerminal = 0
         try:
-            argvParseTerminal = ArgParse(sys.argv[1:])
+            terminalArgv = sys.argv[1:]
+            argvParseTerminal = ArgParse(terminalArgv, defaultDownloadPath)
         except Exception as e:
             print("Oops!", str(e), "occurred.")
             helpMan()
@@ -173,7 +173,7 @@ def main():
     urlListInit()
 
     print("The download start with " + str(pDW) + " parallel Connection")
-    print("Output quiet = " + str(quite))
+    print("Output quiet = " + str(quite) + " My Current Work Directory is: " + os.getcwd())
 
     # Start parallel procedure
     start_time = datetime.now()
