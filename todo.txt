@@ -9,3 +9,4 @@
 -Reorder the system with the logic: Create list item reading the argv line, if more argv line are present (the file setting) execute for each line the parsing and create the item-list.
 - Add global param option at the start of the file
 
+-find a way to redirect the terminal output all to the same, maybe using split terminal
