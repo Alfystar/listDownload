@@ -1,0 +1,11 @@
+- Correct metric when the download is less than the parallel channel
+- Print more detail about the metric
+-Create a man file, and plot him (maybe impossible for the path...)
+- Create the item class, where every download is different object
+- download first the not present file, and concurrently ask to the user if Download again, Overwrite, ignore the file
+- Make possible apply same chose for all
+- Think a gui to "create" easly the input file (pyQt5) and than execute it, active it when call listDownload without no params, and save the file in the currently working directory, to easly change or restart the download after the settings
+
+-Reorder the system with the logic: Create list item reading the argv line, if more argv line are present (the file setting) execute for each line the parsing and create the item-list.
+- Add global param option at the start of the file
+
