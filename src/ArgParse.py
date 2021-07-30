@@ -1,3 +1,118 @@
+import sys
+from .DownloadItem import *
+
+class ParserClass:
+    # Parameter Mandatory
+    baseUrl: str = None
+    endUrl: str = None
+    startNum: int = None
+    endNum: int = None
+
+    # Faculty Parameter
+    pDW: int = None
+    digit: int = 2
+    outDir: str = defaultDir
+    verbose: bool = False
+
+    def __init__(self):
+        self.argvParser()
+        return
+
+
+    def argvParser(self):
+        if "-i" in sys.argv:
+            # File Parser
+            # listDownload.py -i <File List>                                          # Multiple-block download
+            fileList = sys.argv[sys.argv.index("-i") + 1]
+
+        else:
+            # Single download
+            # listDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Global-Options] # One Download block
+            if len(sys.argv) < 5:
+                raise Exception("Not enough parameter for ##One Download block## modality")
+
+            argvParseTerminal = 0
+            try:
+                terminalArgv = sys.argv[1:]
+                argvParseTerminal = ArgParse(terminalArgv, defaultDownloadPath)
+            except Exception as e:
+                print("Oops!", str(e), "occurred.")
+                helpMan()
+
+            # Estraggo i parametri funzionali
+            urlListParam += argvParseTerminal.urlParam
+
+            if argvParseTerminal.pDW is not None:
+                pDW = argvParseTerminal.pDW
+            if argvParseTerminal.quite is not None:
+                quite = argvParseTerminal.quite
+
+
+def urlListInit():
+    """
+    Make the urlList in base of the command line params
+    :return:
+    """
+    global urlListParam, pDW, quite, fileList
+
+    if "-i" in sys.argv:
+        index = sys.argv.index("-i")
+        fileList = sys.argv[index + 1]
+        subList = sys.argv[1:index] + sys.argv[index + 2:]
+        argvListParse = 0
+        try:
+            argvListParse = ArgListParse(subList)
+        except Exception as e:
+            print("Oops!", str(e), "occurred.")
+            helpMan()
+
+        # Estraggo i parametri funzionali
+        if argvListParse.pDW is not None:
+            pDW = argvListParse.pDW
+        if argvListParse.quite is not None:
+            quite = argvListParse.quite
+
+        # Using readlines()
+        file1 = open(fileList, 'r')
+        Lines = file1.readlines()
+        file1.close()
+
+        list_of_lists = []
+        for line in Lines:
+            list_of_lists.append(shlex.split(line))
+
+        argvParseFile = 0
+        for line in list_of_lists:
+            try:
+                argvParseFile = ArgParse(line, argvListParse.outDir)
+            except Exception as e:
+                print("Oops!", str(e), "occurred.")
+                print(line)
+                helpMan()
+
+        # Estraggo i parametri funzionali
+        urlListParam += argvParseFile.urlParam
+
+    else:  # Comando Singolo
+        if len(sys.argv) < 5:
+            helpMan()
+
+        argvParseTerminal = 0
+        try:
+            terminalArgv = sys.argv[1:]
+            argvParseTerminal = ArgParse(terminalArgv, defaultDownloadPath)
+        except Exception as e:
+            print("Oops!", str(e), "occurred.")
+            helpMan()
+
+        # Estraggo i parametri funzionali
+        urlListParam += argvParseTerminal.urlParam
+
+        if argvParseTerminal.pDW is not None:
+            pDW = argvParseTerminal.pDW
+        if argvParseTerminal.quite is not None:
+            quite = argvParseTerminal.quite
+
 class Parser:
     """
     The Parser class contain data and function to read the parameter and create the url

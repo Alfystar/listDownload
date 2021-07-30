@@ -25,7 +25,7 @@ else
     echo "install: git xterm python3"
     echo "Thanks for the cooperation =}"
 fi
-
+sudo pip3 install Django
 sudo chmod +x listDownload.py
 
 REPO_DIR=$(pwd)
