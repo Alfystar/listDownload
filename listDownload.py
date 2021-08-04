@@ -16,7 +16,7 @@ from src.runDownload import *
 def helpMan():
     print("a)\tlistDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Global-Options] # One Download block")
     print("\t Or:")
-    print("b)\tlistDownload.py -i <File List>                                          # Multiple-block download")
+    print("b)\tlistDownload.py <File List>                                             # Multiple-block download")
 
     print("\n<Mandatory Parameters>")
     print("\tbaseUrl:= First part of the url (until XX number)")

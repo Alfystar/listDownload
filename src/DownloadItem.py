@@ -112,28 +112,33 @@ class DownloadItem:
             print("OS not Supported")
             return False
 
+        retCode = 0 # 0:= Download success, otherwise no download started
         if platform.system() == "Linux":
             if self.verbose:
                 cmd = "xterm -e bash -c '" + download_cmd + "'"
             else:
                 cmd = download_cmd + " --quiet"
+
             if debug:
                 print(cmd)
             else:
-                os.system(cmd)
+                retCode = os.system(cmd)
 
         elif platform.system() == "Windows":
             cmd = download_cmd
             if debug:
                 print("powershell.exe " + cmd)
             else:
-                os.system("powershell.exe " + cmd)
+                retCode = os.system("powershell.exe " + cmd)
 
         else:
             print("OS not Supported")
-
+        # todo: ottenere il return code dei terminali in base al successo o meno del download
         print("\n\t END " + self.savePath)
-        return True
+        if(retCode == 0):
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     item = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", "../example/", True)

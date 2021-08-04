@@ -1,6 +1,7 @@
 import sys
 from .DownloadItem import *
 
+
 class ParserClass:
     # Parameter Mandatory
     baseUrl: str = None
@@ -18,12 +19,11 @@ class ParserClass:
         self.argvParser()
         return
 
-
     def argvParser(self):
-        if "-i" in sys.argv:
+        if len(sys.argv) == 2:
             # File Parser
-            # listDownload.py -i <File List>                                          # Multiple-block download
-            fileList = sys.argv[sys.argv.index("-i") + 1]
+            # listDownload.py  <File List>                                            # Multiple-block download
+            fileList = sys.argv[1]
 
         else:
             # Single download
@@ -113,6 +113,7 @@ def urlListInit():
         if argvParseTerminal.quite is not None:
             quite = argvParseTerminal.quite
 
+
 class Parser:
     """
     The Parser class contain data and function to read the parameter and create the url
@@ -157,8 +158,8 @@ class Parser:
         """
         op = argList[0]
 
-        if op == "#" or op == "//":     # comment detect and avoiding
-            return []   # Empty list
+        if op == "#" or op == "//":  # comment detect and avoiding
+            return []  # Empty list
 
         if op == "-p" or op == "--parallelDownload":
             val = argList[1]
@@ -208,7 +209,7 @@ class Parser:
         else:
             raise Exception("The Number of the index aren't number!! please use the correct sintax")
 
-        argList = argv[4:]      # get the variable side of the string
+        argList = argv[4:]  # get the variable side of the string
         self.listArgvParse(argList)
 
     def listArgvParse(self, argList):
