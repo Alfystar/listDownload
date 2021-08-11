@@ -10,3 +10,7 @@
 - Add global param option at the start of the file
 
 -find a way to redirect the terminal output all to the same, maybe using split terminal
+
+- Usando course, ogni thread avrà la sua mini-finestra e potrà plottare le proprie informazioni, mentre usando la libreria responde di python i file verranno scaricati.
+Per il momento, usando course, se non vengono passati input o json al programma, verrà creata una finestra per aggiungere manualmente tutti gli elementi che si vuole, e via via che vengono confermati, si crea la lista, che deve poter essere modificabile, quando si dà conferma del download, viene creato il json per questa configurazione e salvato della directory corrente, quindi si passa alle mini finestre e vengono printati tutti i dati.
+Prima di far partire i download, devono essere fatte le get di tutti i file, scoprire quelli ragiungibili, notificare gli irragiungibili e chiedere se procedere comunque, calcolare la dimensione totale da scaricare, per poter avere una barra della percentuale complessiva, e al termine del programma, una volta chiuso course, printare una lista dei file che non si è potuto scaricare sul terminale
