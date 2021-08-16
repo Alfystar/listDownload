@@ -29,5 +29,8 @@ fi
 sudo chmod +x listDownload.py
 
 REPO_DIR=$(pwd)
+cd /usr/local/bin/
+sudo ln -s $REPO_DIR/listDownload.py
+
 # Export the current path on Mark this setup task as done.
-printf '\n# List download Path add\nPATH="$PATH:'$REPO_DIR'"\n' >> ~/.profile
+# printf '\n# List download Path add\nPATH="$PATH:'$REPO_DIR'"\n' >> ~/.profile
