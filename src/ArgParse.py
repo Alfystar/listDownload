@@ -22,12 +22,12 @@ class ParserClass:
     def argvParser(self):
         if len(sys.argv) == 2:
             # File Parser
-            # listDownload.py  <File List>                                            # Multiple-block download
+            # listdownload.py  <File List>                                            # Multiple-block download
             fileList = sys.argv[1]
 
         else:
             # Single download
-            # listDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Global-Options] # One Download block
+            # listdownload.py <baseUrl> <endUrl> <startNum> <endNum> [Global-Options] # One Download block
             if len(sys.argv) < 5:
                 raise Exception("Not enough parameter for ##One Download block## modality")
 

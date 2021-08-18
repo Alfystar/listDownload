@@ -14,9 +14,9 @@ from src.ArgParse import *
 from src.runDownload import *
 
 def helpMan():
-    print("a)\tlistDownload.py <baseUrl> <endUrl> <startNum> <endNum> [Global-Options] # One Download block")
+    print("a)\tlistdownload.py <baseUrl> <endUrl> <startNum> <endNum> [Global-Options] # One Download block")
     print("\t Or:")
-    print("b)\tlistDownload.py <File List>                                             # Multiple-block download")
+    print("b)\tlistdownload.py <File List>                                             # Multiple-block download")
 
     print("\n<Mandatory Parameters>")
     print("\tbaseUrl:= First part of the url (until XX number)")
@@ -56,26 +56,59 @@ def helpMan():
     print(sys.argv[1:])
     exit(-1)
 
+def show_or_exit(key):
+    if key in ('q', 'Q'):
+        raise urwid.ExitMainLoop()
+    txt.set_text(repr(key))
 
-def main():
-    helpMan()
-    urlListInit()
+# def main():
+#     # helpMan()
+#     # urlListInit()
+#     #
+#     # print("The download start with " + str(pDW) + " parallel Connection")
+#     # print("Output quiet = " + str(quite) + " My Current Work Directory is: " + os.getcwd())
+#     #
+#     # # Start parallel procedure
+#     # start_time = datetime.now()
+#     #
+#     # nDownload = downloadList()
+#     #
+#     # time_elapsed = datetime.now() - start_time
+#     # print("## Downloads end ##")
+#     # print('Total Time (hh:mm:ss.ms) {}'.format(time_elapsed))
+#     # print('Mean Time General(hh:mm:ss.ms) {}'.format(time_elapsed / nDownload))
+#     # print('Mean Time x File (hh:mm:ss.ms) {}'.format(time_elapsed * min(pDW, nDownload) / nDownload))
+#     # print('Concurrency Download :' + str(min(pDW, nDownload)))
+#
+#
+# if __name__ == '__main__':
+#     main()
 
-    print("The download start with " + str(pDW) + " parallel Connection")
-    print("Output quiet = " + str(quite) + " My Current Work Directory is: " + os.getcwd())
+import urwid
 
-    # Start parallel procedure
-    start_time = datetime.now()
+choices = u'Chapman Cleese Gilliam Idle Jones Palin'.split()
 
-    nDownload = downloadList()
+def menu(title, choices):
+    body = [urwid.Text(title), urwid.Divider()]
+    for c in choices:
+        button = urwid.Button(c)
+        urwid.connect_signal(button, 'click', item_chosen, c)
+        body.append(urwid.AttrMap(button, None, focus_map='reversed'))
+    return urwid.ListBox(urwid.SimpleFocusListWalker(body))
 
-    time_elapsed = datetime.now() - start_time
-    print("## Downloads end ##")
-    print('Total Time (hh:mm:ss.ms) {}'.format(time_elapsed))
-    print('Mean Time General(hh:mm:ss.ms) {}'.format(time_elapsed / nDownload))
-    print('Mean Time x File (hh:mm:ss.ms) {}'.format(time_elapsed * min(pDW, nDownload) / nDownload))
-    print('Concurrency Download :' + str(min(pDW, nDownload)))
+def item_chosen(button, choice):
+    response = urwid.Text([u'You chose ', choice, u'\n'])
+    done = urwid.Button(u'Ok')
+    urwid.connect_signal(done, 'click', exit_program)
+    main.original_widget = urwid.Filler(urwid.Pile([response,
+        urwid.AttrMap(done, None, focus_map='reversed')]))
 
+def exit_program(button):
+    raise urwid.ExitMainLoop()
 
-if __name__ == '__main__':
-    main()
+main = urwid.Padding(menu(u'Pythons', choices), left=2, right=2)
+top = urwid.Overlay(main, urwid.SolidFill(u'\N{MEDIUM SHADE}'),
+    align='center', width=('relative', 90),
+    valign='middle', height=('relative', 90),
+    min_width=20, min_height=9)
+urwid.MainLoop(top, palette=[('reversed', 'standout', '')]).run()

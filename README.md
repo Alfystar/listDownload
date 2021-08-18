@@ -30,13 +30,13 @@ After reboot, the path will be add on all path in all environment, until the reb
 Possible example to use the command do download list of anime are:
 
 ```bash
-listDownload.py https://www.eyesonanime.org/DDL/ANIME/BlackClover/BlackClover_Ep_ _SUB_ITA.mp4 1 20 -p 100 -d 1 -q
+listdownload.py https://www.eyesonanime.org/DDL/ANIME/BlackClover/BlackClover_Ep_ _SUB_ITA.mp4 1 20 -p 100 -d 1 -q
 ```
 
 For case with big number of tiny file where the digit aren't always 2:
 
 ```bash
-listDownload.py https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 1 41 -p 100 -d 1 -q
+listdownload.py https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 1 41 -p 100 -d 1 -q
 ```
 
 More over, if you have to download form different site and with different macro url, it's possible create list in a file, and next use the software to parallelize the download in efficient manner:
@@ -52,7 +52,7 @@ https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_ .pdf 20 25 -p 100 
 and next call the software (remember, `test.txt` is the path where the file is saved):
 
 ```bash
-listDownload.py -i test.txt -o testDir
+listdownload.py -i test.txt -o testDir
 ```
 
 with this output

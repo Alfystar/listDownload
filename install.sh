@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-# Install script for List Download
+# Install script for List Download in the system for all user
 
 # Verify that the PWD is the listDownload root directory.
 CURR_DIR=${PWD##*/}
@@ -25,9 +25,12 @@ else
     echo "install: git xterm python3"
     echo "Thanks for the cooperation =}"
 fi
-sudo pip3 install Django
-sudo chmod +x listDownload.py
+sudo pip3 install Django urwid
+sudo chmod +x listdownload.py
 
 REPO_DIR=$(pwd)
+cd /usr/local/bin/
+sudo ln -s $REPO_DIR/listDownload.py
+
 # Export the current path on Mark this setup task as done.
-printf '\n# List download Path add\nPATH="$PATH:'$REPO_DIR'"\n' >> ~/.profile
+# printf '\n# List download Path add\nPATH="$PATH:'$REPO_DIR'"\n' >> ~/.profile
