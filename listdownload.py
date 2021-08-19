@@ -81,7 +81,7 @@ def helpMan():
 #
 #
 if __name__ == '__main__':
-    if (x in ["-h", "--help"] for x in sys.argv):
+    if any(x in ["-h", "--help"] for x in sys.argv):
         helpMan()
 
-    loop = urwid.MainLoop(makeTopWindows()).run()
+    loop = urwid.MainLoop(makeTopWindows(),palette=palette,  unhandled_input=exit_on_q).run()
