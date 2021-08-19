@@ -29,9 +29,6 @@ class DownloadPolicy(Enum):
 
 class DownloadInfo:
     currentItem = None  # type DownloadItem, but isn't possible force because the first depend from the second
-    totalSize: int = 0
-    downloadSize: int = 0
-    currentSpeed: int = 0
 
     def __init__(self):
         pass
@@ -54,7 +51,15 @@ class DownloadItem:
     fileExist: bool = False
     filePolicy: DownloadPolicy = DownloadPolicy.DownloadIfNew  # If file exist, policy can change
 
-    def __init__(self, url: str, outDir: str = defaultDir, verbose: bool = False):
+    # Download Current State
+    totalSize: int = 0
+    downloadSize: int = 0
+    currentSpeed: int = 0
+
+    # Callback pointer
+    dataUpdateNotify_callback = None  # self.dataUpdateNotify_callback(self)   Notify another Chunk-Reading
+
+    def __init__(self, url: str, outDir: str = defaultDir, verbose: bool = False, readNotify=None):
         # Url extract Data
         if is_string_an_url(url):
             self.url = url
@@ -65,8 +70,11 @@ class DownloadItem:
         # OutDir extract Data
         self.changeSaving(outDir, name)
 
-        # Vervose extract Data
+        # Verbose extract Data
         self.verbose = verbose
+
+        # Calls-back
+        self.dataUpdateNotify_callback = readNotify
 
     def changeSaving(self, path: str = "", new_name: str = ""):
         if new_name == "":

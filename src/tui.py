@@ -1,9 +1,8 @@
 import urwid
 
 
-def exit_on_q(key):
-    if key in ('q', 'Q'):
-        raise urwid.ExitMainLoop()
+def exitTUI():
+    raise urwid.ExitMainLoop()
 
 
 palette = [
@@ -42,70 +41,52 @@ def makeHeader():
 
 def makeBody():
     class MenuButton(urwid.Button):
-        def __init__(self, caption, callback):
+        def __init__(self, caption, callback, param):
             super(MenuButton, self).__init__("")
-            urwid.connect_signal(self, 'click', callback)
+            urwid.connect_signal(self, 'click', callback, param)
             self._w = urwid.AttrMap(urwid.SelectableIcon(
                 [u'  \N{BULLET} ', caption], 2), None, 'selected')
 
-    class SubMenu(urwid.WidgetWrap):
-        def __init__(self, caption, choices):
-            super(SubMenu, self).__init__(MenuButton(
-                [caption, u"\N{HORIZONTAL ELLIPSIS}"], self.open_menu))
-            line = urwid.Divider(u'\N{LOWER ONE QUARTER BLOCK}')
-            listbox = urwid.ListBox(urwid.SimpleFocusListWalker([
-                                                                    urwid.AttrMap(urwid.Text([u"\n  ", caption]),
-                                                                                  'heading'),
-                                                                    urwid.AttrMap(line, 'line'),
-                                                                    urwid.Divider()] + choices + [urwid.Divider()]))
-            self.menu = urwid.AttrMap(listbox, 'options')
+    def menu(title, choices):
+        """
+        @title      := Title of the columns
+        @choices    := List of Tuple, each touple are (ButtonName:str, Callback)
+        """
+        body = [urwid.AttrMap(urwid.Text(title, 'center'), 'heading'), urwid.Divider()]
 
-        def open_menu(self, button):
-            top.open_box(self.menu)
+        for c in choices:
+            button = MenuButton(c[0], c[1], c[0])
+            body.append(urwid.AttrMap(button, None, focus_map='reversed'))
+        return urwid.ListBox(urwid.SimpleFocusListWalker(body))
 
-    class Choice(urwid.WidgetWrap):
-        def __init__(self, caption):
-            super(Choice, self).__init__(
-                MenuButton(caption, self.item_chosen))
-            self.caption = caption
+    def item_chosen(button, choice):
+        response = urwid.Text([u'You chose "', choice, u'"\n'])
+        done = urwid.Button(u'Ok')
+        urwid.connect_signal(done, 'click', exit_program)
+        main.original_widget = urwid.Filler(urwid.Pile([response,
+                                                        urwid.AttrMap(done, None, focus_map='reversed')]))
 
-        def item_chosen(self, button):
-            response = urwid.Text([u'  You chose ', self.caption, u'\n'])
-            done = MenuButton(u'Ok', exit_program)
-            response_box = urwid.Filler(urwid.Pile([response, done]))
-            top.open_box(urwid.AttrMap(response_box, 'options'))
-
-    def exit_program(key):
+    def exit_program(button):
         raise urwid.ExitMainLoop()
 
-    menu_top = SubMenu(u'Main Menu', [
-        SubMenu(u'Applications', [
-            SubMenu(u'Accessories', [
-                Choice(u'Text Editor'),
-                Choice(u'Terminal'),
-            ]),
-        ]),
-        SubMenu(u'System', [
-            SubMenu(u'Preferences', [
-                Choice(u'Appearance'),
-            ]),
-            Choice(u'Lock Screen'),
-        ]),
-    ])
+    choices =[ ("Add Download", item_chosen),
+               ("Change Download", item_chosen),
+               ("Global Setting", item_chosen),
+               ("Save Setting", item_chosen),
+               ("Load Setting", item_chosen),
+               ("Start Download", item_chosen),
+               ]
 
-    class HorizontalBoxes(urwid.Columns):
-        def __init__(self):
-            super(HorizontalBoxes, self).__init__([], dividechars=1)
+    main = urwid.Padding(menu(u'Command', choices), left=2, right=2)
+    # top = urwid.Columns([menuOption, urwid.SolidFill('/')])
+    top = urwid.Columns(
+        [('weight', 1, main), ('weight', 2, urwid.Overlay(urwid.Filler(urwid.Edit()), urwid.SolidFill('/'),
+                                                          align='center', width=('relative', 80),
+                                                          valign='middle', height=('relative', 80)))
+         ])
 
-        def open_box(self, box):
-            if self.contents:
-                del self.contents[self.focus_position + 1:]
-            self.contents.append((urwid.AttrMap(box, 'options', focus_map),
-                                  self.options('given', 24)))
-            self.focus_position = len(self.contents) - 1
-
-    top = HorizontalBoxes()
-    top.open_box(menu_top.menu)
+    # top = urwid.Columns([menuOption, urwid.Filler(urwid.Text("ciao"))])
+    return top
     return top
 
 

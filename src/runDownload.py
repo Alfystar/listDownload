@@ -8,7 +8,7 @@ from .DownloadItem import DownloadInfo as DI
 nDownload: int = 0
 
 
-def downloadList(items: list, dwInfos: list = [DI(), DI(), DI(), DI(), DI(), DI(), DI(), DI(), DI(), DI()]) -> int:
+def downloadList(items: list, pDW: int = 10) -> int:
     """
     @items  : Array of DownloadItem
     @pDW    : Number of max parallel Connection openable
@@ -19,8 +19,8 @@ def downloadList(items: list, dwInfos: list = [DI(), DI(), DI(), DI(), DI(), DI(
     for it in items:
         q.put(it)
 
-    for dwInfo in dwInfos:
-        t = threading.Thread(target=run_thread, args=[q, dwInfo])
+    for dwInfo in range(pDW):
+        t = threading.Thread(target=run_thread, args=[q])
         t.start()
 
     while not q.empty():
