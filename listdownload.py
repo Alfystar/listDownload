@@ -10,8 +10,11 @@ import sys
 from datetime import datetime
 
 # Personal Lib
+import urwid
+
 from src.ArgParse import *
 from src.runDownload import *
+from src.tui import *
 
 def helpMan():
     print("a)\tlistdownload.py <baseUrl> <endUrl> <startNum> <endNum> [Global-Options] # One Download block")
@@ -56,10 +59,6 @@ def helpMan():
     print(sys.argv[1:])
     exit(-1)
 
-def show_or_exit(key):
-    if key in ('q', 'Q'):
-        raise urwid.ExitMainLoop()
-    txt.set_text(repr(key))
 
 # def main():
 #     # helpMan()
@@ -81,34 +80,8 @@ def show_or_exit(key):
 #     # print('Concurrency Download :' + str(min(pDW, nDownload)))
 #
 #
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    if (x in ["-h", "--help"] for x in sys.argv):
+        helpMan()
 
-import urwid
-
-choices = u'Chapman Cleese Gilliam Idle Jones Palin'.split()
-
-def menu(title, choices):
-    body = [urwid.Text(title), urwid.Divider()]
-    for c in choices:
-        button = urwid.Button(c)
-        urwid.connect_signal(button, 'click', item_chosen, c)
-        body.append(urwid.AttrMap(button, None, focus_map='reversed'))
-    return urwid.ListBox(urwid.SimpleFocusListWalker(body))
-
-def item_chosen(button, choice):
-    response = urwid.Text([u'You chose ', choice, u'\n'])
-    done = urwid.Button(u'Ok')
-    urwid.connect_signal(done, 'click', exit_program)
-    main.original_widget = urwid.Filler(urwid.Pile([response,
-        urwid.AttrMap(done, None, focus_map='reversed')]))
-
-def exit_program(button):
-    raise urwid.ExitMainLoop()
-
-main = urwid.Padding(menu(u'Pythons', choices), left=2, right=2)
-top = urwid.Overlay(main, urwid.SolidFill(u'\N{MEDIUM SHADE}'),
-    align='center', width=('relative', 90),
-    valign='middle', height=('relative', 90),
-    min_width=20, min_height=9)
-urwid.MainLoop(top, palette=[('reversed', 'standout', '')]).run()
+    loop = urwid.MainLoop(makeTopWindows()).run()

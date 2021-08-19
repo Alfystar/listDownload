@@ -5,6 +5,7 @@ from .validateFunction import *
 debug: bool = True
 defaultDir: str = "./listDownload/"
 
+
 def changeDefaultDir(newDir) -> None:
     global defaultDir
     newDir = removeProblematicCharacter(newDir)
@@ -24,6 +25,16 @@ class DownloadPolicy(Enum):
     Override = auto()  # Override the File if already exist
     DownloadIfNew = auto()  # Override if the webFile is more newly
     Ignore = auto()  # Jump this File if already exist
+
+
+class DownloadInfo:
+    currentItem = None  # type DownloadItem, but isn't possible force because the first depend from the second
+    totalSize: int = 0
+    downloadSize: int = 0
+    currentSpeed: int = 0
+
+    def __init__(self):
+        pass
 
 
 class DownloadItem:
@@ -78,10 +89,13 @@ class DownloadItem:
         self.savePath = savePath
         self.fileExist = os.path.isfile(self.savePath)
 
-    def download(self) -> bool:
+    def download(self, di: DownloadInfo = None) -> bool:
         """
         This Function return true if file are effectively downloaded
         """
+        if di is not None:
+            di.currentItem = self
+
         # Create the Download Directory
         try:
             os.makedirs(self.outDir)
@@ -112,7 +126,7 @@ class DownloadItem:
             print("OS not Supported")
             return False
 
-        retCode = 0 # 0:= Download success, otherwise no download started
+        retCode = 0  # 0:= Download success, otherwise no download started
         if platform.system() == "Linux":
             if self.verbose:
                 cmd = "xterm -e bash -c '" + download_cmd + "'"
@@ -135,10 +149,11 @@ class DownloadItem:
             print("OS not Supported")
         # todo: ottenere il return code dei terminali in base al successo o meno del download
         print("\n\t END " + self.savePath)
-        if(retCode == 0):
+        if (retCode == 0):
             return True
         else:
             return False
+
 
 if __name__ == '__main__':
     item = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", "../example/", True)
