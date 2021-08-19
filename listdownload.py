@@ -16,6 +16,7 @@ from src.ArgParse import *
 from src.runDownload import *
 from src.tui import *
 
+
 def helpMan():
     print("a)\tlistdownload.py <baseUrl> <endUrl> <startNum> <endNum> [Global-Options] # One Download block")
     print("\t Or:")
@@ -84,4 +85,4 @@ if __name__ == '__main__':
     if any(x in ["-h", "--help"] for x in sys.argv):
         helpMan()
 
-    loop = urwid.MainLoop(makeTopWindows(),palette=palette).run()
+    loop = urwid.MainLoop(makeTopWindows(), palette=palette).run()

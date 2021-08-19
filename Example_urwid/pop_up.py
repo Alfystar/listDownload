@@ -17,19 +17,21 @@ class PopUpDialog(urwid.WidgetWrap):
 
 
 class ThingWithAPopUp(urwid.PopUpLauncher):
-    def __init__(self):
+    def __init__(self): # Definisce un pulsante che quando viene cliccato scatena l'evento open_pop_up, che all'interno chiama create_pop_up
         self.__super.__init__(urwid.Button("click-me"))
         urwid.connect_signal(self.original_widget, 'click',
             lambda button: self.open_pop_up())
 
-    def create_pop_up(self):
+    def create_pop_up(self):    # Genera in loco un widget, e in questo caso assegna al pulsante la chiusura
         pop_up = PopUpDialog()
         urwid.connect_signal(pop_up, 'close',
             lambda button: self.close_pop_up())
         return pop_up
 
-    def get_pop_up_parameters(self):
-        return {'left':0, 'top':1, 'overlay_width':32, 'overlay_height':7}
+    def get_pop_up_parameters(self): # assegna posizione relativa rispetto pulsante
+        return {'left':1, 'top':-2, 'overlay_width':40, 'overlay_height':5}
+
+    # create_pop_up & get_pop_up_parameters sono funzioni da overridare
 
 
 fill = urwid.Filler(urwid.Padding(ThingWithAPopUp(), 'center', 15))
