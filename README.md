@@ -127,7 +127,7 @@ For EVERY LINE the syntax MUST be is:
 - wget (default)
 - xterm (default)
 
-#### Linux dependace
+#### Windows dependace
 - Invoke-WebRequest(default)
 
 
