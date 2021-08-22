@@ -15,17 +15,23 @@ PACMAN_PATH=$(which pacman)
 
 if [[ $APT_PATH != "" ]]; then         # verify the presence of the apt manager
     sudo apt update -y
-    sudo apt install git xterm python3 -y
+    sudo apt install python3 python3-pip -y
     sudo apt autoremove -y
 elif [[ $PACMAN_PATH != "" ]]; then    # verify the presence of the pacman manager
     sudo pacman -Syy
-    sudo pacman -S git xterm python3 -y
+    sudo pacman -S python3 python3-pip -y
 else
     echo "This Install script wasn't think for your Pack Manager (Apt or Pacman), please install by yourself the following dependances:"
     echo "install: git xterm python3"
     echo "Thanks for the cooperation =}"
 fi
-sudo pip3 install Django urwid
+
+# Python3 dependances
+# Django is network testing library
+# urwid is TUI library
+#   @urwidtrees is library based on urwid
+
+sudo pip3 install Django urwid urwidtrees
 sudo chmod +x listdownload.py
 
 REPO_DIR=$(pwd)

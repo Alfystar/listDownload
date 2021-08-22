@@ -1,5 +1,6 @@
 import urwid
-from .tuiSrc.CommandMenu import *
+from .CommandMenu import *
+from .DownloadTree import *
 
 palette = [
     ('reversed', 'standout', ''),
@@ -14,7 +15,12 @@ palette = [
     ('focus heading', 'white', 'dark red'),
     ('focus line', 'black', 'dark red'),
     ('focus options', 'black', 'light gray'),
-    ('selected', 'white', 'dark blue')
+    ('selected', 'white', 'dark blue'),
+    ('body', 'white', 'black'),
+    ('focus', 'light gray', 'dark blue', 'standout'),
+    ('bars', 'dark blue', 'light gray', ''),
+    ('arrowtip', 'light blue', 'light gray', ''),
+    ('connectors', 'light red', 'light gray', ''),
 ]
 
 focus_map = {
@@ -38,20 +44,21 @@ def makeHeader():
 
 def makeBody():
     rightSide = CommandMenu()
-    leftSide = urwid.Overlay(urwid.Filler(urwid.Edit()), urwid.SolidFill('/'),
-                             align='center', width=('relative', 80),
-                             valign='middle', height=('relative', 80))
+    leftSide = DownloadTree(RequestConteiner())
+    # leftSide = urwid.Overlay(urwid.Filler(urwid.Edit()), urwid.SolidFill('/'),
+    #                          align='center', width=('relative', 80),
+    #                          valign='middle', height=('relative', 80))
     top = urwid.Columns(
-        [('weight', 1, rightSide), ('weight', 2, leftSide)
+        [('weight', 1, rightSide), ('weight', 3, leftSide)
          ])
     return top
 
 
 def makeFooter():
     return urwid.LineBox(urwid.Pile([
-        urwid.Text("Create Equipment"),
-        urwid.Text("Arrow: ←↑↓→ keys navigate, 'Enter' to select form button. 'Esc' to come back."),
-        urwid.Text("Mouse is valid input."),
+        urwid.Text("Program key"),
+        urwid.Text("CommandList := ←↑↓→ navigate, 'Enter' to select form button."),
+        urwid.Text("DownloadTree:= ←↑↓→ navigate, -/+ collapse/expand, C/E allVariant, '['/']' Same level move"),
         # urwid.Divider()
     ]))
 

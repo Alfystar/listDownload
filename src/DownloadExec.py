@@ -2,8 +2,7 @@ import time
 import threading
 import queue
 # import DownloadItem
-from .DownloadItem import *
-from .DownloadItem import DownloadInfo as DI
+from src.listDownloadSrc.DownloadItem import *
 
 nDownload: int = 0
 

@@ -2,6 +2,10 @@ import sys
 from .DownloadItem import *
 
 
+class RequestConteiner:
+    pass
+
+
 class ParserClass:
     # Parameter Mandatory
     baseUrl: str = None

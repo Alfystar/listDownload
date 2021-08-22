@@ -4,17 +4,10 @@
 # Test file:
 # -i test.txt -o testDir
 
-import os
-import shlex
-import sys
-from datetime import datetime
-
 # Personal Lib
-import urwid
 
-from src.ArgParse import *
-from src.runDownload import *
-from src.tui import *
+from src.DownloadExec import *
+from src.tuiSrc.tui import *
 
 
 def helpMan():
