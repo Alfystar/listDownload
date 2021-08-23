@@ -12,7 +12,7 @@ class MenuButton(urwid.Button):
 class CommandMenu(urwid.WidgetPlaceholder):
     def __init__(self):
         choices = [("Add Download", self.item_chosen),
-                   ("Change Download", self.item_chosen),
+                   #("Change Download", self.item_chosen),
                    ("Global Setting", self.item_chosen),
                    ("Save Setting", self.item_chosen),
                    ("Load Setting", self.item_chosen),

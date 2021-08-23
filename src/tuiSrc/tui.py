@@ -16,11 +16,15 @@ palette = [
     ('focus line', 'black', 'dark red'),
     ('focus options', 'black', 'light gray'),
     ('selected', 'white', 'dark blue'),
+    # TreeView Palette
     ('body', 'white', 'black'),
     ('focus', 'light gray', 'dark blue', 'standout'),
     ('bars', 'dark blue', 'light gray', ''),
     ('arrowtip', 'light blue', 'light gray', ''),
     ('connectors', 'light red', 'light gray', ''),
+    # ProgressBar Palette
+    ('normal', 'black', 'light gray'),
+    ('complete', 'black', 'dark red'),
 ]
 
 focus_map = {
@@ -44,13 +48,11 @@ def makeHeader():
 
 def makeBody():
     rightSide = CommandMenu()
-    leftSide = DownloadTree(RequestConteiner())
-    # leftSide = urwid.Overlay(urwid.Filler(urwid.Edit()), urwid.SolidFill('/'),
-    #                          align='center', width=('relative', 80),
-    #                          valign='middle', height=('relative', 80))
-    top = urwid.Columns(
-        [('weight', 1, rightSide), ('weight', 3, leftSide)
-         ])
+    leftSide = urwid.Overlay(DownloadTree(RequestContainer()), urwid.SolidFill("-"),
+                             align='left', width=('relative', 100),
+                             valign='bottom', height=('relative', 100),
+                             top=1)
+    top = urwid.Columns([('weight', 1, rightSide), ('weight', 3, leftSide)])
     return top
 
 

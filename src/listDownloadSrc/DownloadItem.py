@@ -57,9 +57,11 @@ class DownloadItem:
     currentSpeed: int = 0
 
     # Callback pointer
-    dataUpdateNotify_callback = None  # self.dataUpdateNotify_callback(self)   Notify another Chunk-Reading
+    chunkUpdateNotify: list = []
+    completeUpdateNotify: list = []
 
-    def __init__(self, url: str, outDir: str = defaultDir, verbose: bool = False, readNotify=None):
+    def __init__(self, url: str, outDir: str = defaultDir, verbose: bool = False,
+                 chunkUpdateNotify=None, completeUpdateNotify=None):
         # Url extract Data
         if is_string_an_url(url):
             self.url = url
@@ -74,9 +76,14 @@ class DownloadItem:
         self.verbose = verbose
 
         # Calls-back
-        self.dataUpdateNotify_callback = readNotify
+        self.registerChunkUpdateNotify(chunkUpdateNotify)
+        self.registerCompleteUpdateNotify(completeUpdateNotify)
 
     def changeSaving(self, path: str = "", new_name: str = ""):
+        """
+        @path := The directory path where the file will save
+        @new_name := The name of the file
+        """
         if new_name == "":
             new_name = self.name
         if path == "":
@@ -161,6 +168,24 @@ class DownloadItem:
             return True
         else:
             return False
+
+    # CallBack function
+
+    def registerChunkUpdateNotify(self, callbackRegister):
+        self.chunkUpdateNotify.append(callbackRegister)
+
+    def sendChunkUpdateNotify(self):
+        for call in self.chunkUpdateNotify:
+            call(self)
+
+    def registerCompleteUpdateNotify(self, callbackRegister):
+        self.completeUpdateNotify.append(callbackRegister)
+
+    def sendCompleteUpdateNotify(self):
+        for call in self.completeUpdateNotify:
+            call(self)
+
+ExampleItem = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", "./example/", True)
 
 
 if __name__ == '__main__':

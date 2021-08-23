@@ -2,8 +2,18 @@ import sys
 from .DownloadItem import *
 
 
-class RequestConteiner:
-    pass
+class RequestContainer:
+    changeNotifyCallback: list = []
+
+    def __init__(self):
+        pass
+
+    def registerChangeNotify(self, callbackRegister):
+        self.changeNotifyCallback.append(callbackRegister)
+
+    def sendChangeNotify(self):
+        for call in self.changeNotifyCallback:
+            call(self)
 
 
 class ParserClass:
