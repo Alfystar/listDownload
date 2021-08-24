@@ -51,7 +51,12 @@ class DownloadDisplay(urwid.WidgetWrap):
 
         self.itemUpdateData()
 
-        top = urwid.Columns([self.name,self.bar, self.policy, self.size, self.speed] , dividechars=1)
+        top = urwid.Columns([('weight', 8, self.name),
+                             ('weight', 4, self.bar),
+                             ('weight', 1, self.policy),
+                             ('weight', 4, self.size),
+                             ('weight', 2, self.speed)]
+                            , dividechars=0)
         top = urwid.AttrMap(top, 'DownloadItem', 'DownloadItemFocus')
 
         urwid.WidgetWrap.__init__(self, top)
@@ -63,8 +68,8 @@ class DownloadDisplay(urwid.WidgetWrap):
         self.name = urwid.Text(self.item.name, align='left')
         self.bar = urwid.ProgressBar('normal', 'complete', self.item.downloadStatus(), satt='c')
         self.policy = urwid.Text(self.item.filePolicy.name, align='center')
-        self.size = urwid.Text(self.item.memStatus(), align='right')
-        self.speed = urwid.Text(self.item.speedStatus(), align='right')
+        self.size = urwid.Text(self.item.memStatus(), align='center')
+        self.speed = urwid.Text(self.item.speedStatus(), align='center')
 
     def selectable(self):
         return self._selectable
@@ -107,7 +112,7 @@ class DownloadDisplay(urwid.WidgetWrap):
         super().refresh()
 
 
-class RequestConteinerDisplay(urwid.WidgetWrap):
+class RequestContainerDisplay(urwid.WidgetWrap):
     pass
 
 

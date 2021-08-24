@@ -153,15 +153,15 @@ def bytesConvert(B: int, baseMultiplier: str = "Ki") -> str:
     T = float(K ** 4)  # 1,099,511,627,776
     ret = ""
     if B < K:
-        ret = '{0} {1}'.format(B, 'Bytes' if 0 == B > 1 else 'Byte')
+        return '{0}B'.format(B)
     elif K <= B < M:
-        ret = '{0:.2f} K'.format(B / K)
+        ret = '{0:.2f}K'.format(B / K)
     elif M <= B < G:
-        ret = '{0:.2f} M'.format(B / M)
+        ret = '{0:.2f}M'.format(B / M)
     elif G <= B < T:
-        ret = '{0:.2f} G'.format(B / G)
+        ret = '{0:.2f}G'.format(B / G)
     elif T <= B:
-        ret = '{0:.2f} T'.format(B / T)
+        ret = '{0:.2f}T'.format(B / T)
 
     if (baseMultiplier.lower() == "k"):
         return ret + "B"
