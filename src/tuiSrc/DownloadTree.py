@@ -2,9 +2,13 @@ from urwidtrees.widgets import TreeBox
 from urwidtrees.tree import SimpleTree
 from urwidtrees.nested import NestedTree
 from urwidtrees.decoration import ArrowTree, CollapsibleArrowTree  # decoration
+
 import urwid
-from ..listDownloadSrc.RequestContainer import RequestContainer
-from ..listDownloadSrc.DownloadItem import DownloadItem, ExampleItem
+from urwid import ACTIVATE
+from urwid.util import is_mouse_press
+
+from ..listDownloadSrc.userRequestSubSystem import RequestContainer
+from ..listDownloadSrc.downloadSubSystem import DownloadItem, ExampleItem
 
 
 # We use selectable Text widgets for our example..
@@ -27,55 +31,84 @@ class FocusableText(urwid.WidgetWrap):
 
 class DownloadDisplay(urwid.WidgetWrap):
     item: DownloadItem = None
+    _selectable: bool = False
 
-    # Display Object
+    # Download Display Objects
     name: urwid.Text = None
     bar: urwid.ProgressBar = None
     policy: urwid.Text = None
     size: urwid.Text = None
     speed: urwid.Text = None
 
-    def __init__(self, item: DownloadItem):
+    signals = ["click"]
+
+    def __init__(self, item: DownloadItem, selectable: bool = True):
         self.item = item
-        self.item.registerChunkUpdateNotify(self.chunkNotify)
-        self.item.registerCompleteUpdateNotify(self.compleateNotify)
+        self.item.registerDownloadUpdateNotify(self.downloadNotify)
+        self.item.registerCompleteUpdateNotify(self.completeNotify)
 
-        self.name = urwid.Text("Name", align='left')
-        self.bar = urwid.ProgressBar('normal', 'complete', 100)
-        self.policy = urwid.Text("Policy", align='left')
-        self.size = urwid.Text("curr MB/Total GB", align='right')
-        self.speed = urwid.Text("Speed Mib/s", align='right')
-        top = urwid.Columns([self.name, self.bar, self.size, self.speed], dividechars=1)
-        top = urwid.AttrMap(top, 'body', 'focus')
+        self._selectable = selectable
 
-        w = top
-        urwid.WidgetWrap.__init__(self, w)
+        self.itemUpdateData()
+
+        top = urwid.Columns([self.name,self.bar, self.policy, self.size, self.speed] , dividechars=1)
+        top = urwid.AttrMap(top, 'DownloadItem', 'DownloadItemFocus')
+
+        urwid.WidgetWrap.__init__(self, top)
 
         # todo: generare il segnale per il click sulla riga
         urwid.connect_signal(self, 'click', self.clickEvent)
 
+    def itemUpdateData(self):
+        self.name = urwid.Text(self.item.name, align='left')
+        self.bar = urwid.ProgressBar('normal', 'complete', self.item.downloadStatus(), satt='c')
+        self.policy = urwid.Text(self.item.filePolicy.name, align='center')
+        self.size = urwid.Text(self.item.memStatus(), align='right')
+        self.speed = urwid.Text(self.item.speedStatus(), align='right')
+
     def selectable(self):
-        return True
+        return self._selectable
 
     def keypress(self, size, key):
-        return key
+        """
+        Send 'click' signal on 'enter' command.
+        """
+        if self._command_map[key] != ACTIVATE:
+            return key
+
+        self._emit('click')
+
+    def mouse_event(self, size, event, button, x, y, focus):
+        """
+        Send 'click' signal on button 1 press.
+        """
+        if button != 1 or not is_mouse_press(event):
+            return False
+
+        self._emit('click')
+        return True
 
     i = 0
+
     # Click
-    def clickEvent(self):
-        self.i = self.i+1
-        self.name.set_text(["Cliccato ", self.i ," Volte"])
+    def clickEvent(self, objectEvent):
+        self.i = self.i + 1
+        self.name.set_text(["Cliccato ", str(self.i), " Volte"])
 
     # Notify Callback
-    def chunkNotify(self, rc: DownloadItem):
-        # todo: Quando rc notifica il proprio cambiamento, questa funzione deve richiamare generateTree e riassegnarla
-        # Ricordando di chiamare super()..refresh()  # callback for the Main loop to recalculate all the windows
-        pass
+    def downloadNotify(self, objectNotify: DownloadItem):
+        self.itemUpdateData()
+        super().refresh()
 
-    def compleateNotify(self, rc: DownloadItem):
-        # todo: Quando rc notifica il proprio cambiamento, questa funzione deve richiamare generateTree e riassegnarla
-        # Ricordando di chiamare super()..refresh()  # callback for the Main loop to recalculate all the windows
-        pass
+    def completeNotify(self, objectNotify: DownloadItem):
+        self.itemUpdateData()
+        newTop = urwid.Columns([urwid.AttrMap(self.name, 'banner'), self.bar, self.size], dividechars=1)
+        urwid.WidgetWrap.__init__(self, newTop)
+        super().refresh()
+
+
+class RequestConteinerDisplay(urwid.WidgetWrap):
+    pass
 
 
 class DownloadTree(TreeBox):
@@ -96,7 +129,7 @@ class DownloadTree(TreeBox):
 
     def generateTree(self):
         # todo, create method in class to ask at rcObj to generate the tree structure
-        return SimpleTree([(FocusableText('Mid Child Three'), [
+        return SimpleTree([(FocusableText('Download List:'), [
             (FocusableText('Mid Grandchild One'), [
                 (DownloadDisplay(ExampleItem), [
                     (FocusableText('Mid Grandchild One'), None),
@@ -143,7 +176,7 @@ class DownloadTree(TreeBox):
             return key
 
     # Notify Callback
-    def rcNotify(self, rc: RequestContainer):
+    def rcNotify(self, rcNotify: RequestContainer):
         # todo: Quando rc notifica il proprio cambiamento, questa funzione deve richiamare generateTree e riassegnarla
         # Ricordando di chiamare super()..refresh()  # callback for the Main loop to recalculate all the windows
         pass

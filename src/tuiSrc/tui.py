@@ -18,10 +18,13 @@ palette = [
     ('selected', 'white', 'dark blue'),
     # TreeView Palette
     ('body', 'white', 'black'),
-    ('focus', 'light gray', 'dark blue', 'standout'),
+    ('focus', 'black', 'dark red', 'standout'),
     ('bars', 'dark blue', 'light gray', ''),
     ('arrowtip', 'light blue', 'light gray', ''),
     ('connectors', 'light red', 'light gray', ''),
+    # Download Tree item:
+    ('DownloadItem', 'white', 'black'), # like body
+    ('DownloadItemFocus', 'light gray', 'dark blue'),
     # ProgressBar Palette
     ('normal', 'black', 'light gray'),
     ('complete', 'black', 'dark red'),
@@ -52,7 +55,7 @@ def makeBody():
                              align='left', width=('relative', 100),
                              valign='bottom', height=('relative', 100),
                              top=1)
-    top = urwid.Columns([('weight', 1, rightSide), ('weight', 3, leftSide)])
+    top = urwid.Columns([('weight', 2, rightSide), ('weight', 7, leftSide)])
     return top
 
 

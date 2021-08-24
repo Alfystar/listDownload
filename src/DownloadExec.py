@@ -2,7 +2,7 @@ import time
 import threading
 import queue
 # import DownloadItem
-from src.listDownloadSrc.DownloadItem import *
+from src.listDownloadSrc.downloadSubSystem import *
 
 nDownload: int = 0
 

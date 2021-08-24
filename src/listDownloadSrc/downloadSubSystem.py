@@ -1,6 +1,6 @@
 from enum import Enum, auto
 import platform
-from .validateFunction import *
+from utilityFunction import *
 
 debug: bool = True
 defaultDir: str = "./listDownload/"
@@ -15,16 +15,10 @@ def changeDefaultDir(newDir) -> None:
     defaultDir = newDir
 
 
-def removeProblematicCharacter(path: str) -> str:
-    path = path.replace(" ", "_")
-    path = path.replace(":", "_")
-    return path
-
-
 class DownloadPolicy(Enum):
-    Override = auto()  # Override the File if already exist
-    DownloadIfNew = auto()  # Override if the webFile is more newly
-    Ignore = auto()  # Jump this File if already exist
+    Ov = auto()  # Override         := Override the File if already exist
+    DN = auto()  # DownloadIfNew    := If the webFile is newly download
+    Ig = auto()  # Jump             := Jump over this File if already exist
 
 
 class DownloadInfo:
@@ -42,14 +36,16 @@ class DownloadItem:
     # Download Parameter
     url: str = ""  # Download Url
     name: str = ""  # File name
-    outDir: str = ""  # Output Directory of the Download, not end with '/' possibly
+    outDir: str = ""  # Output Directory of the Download, not end with '/' possibly,
+    outDirDefault: bool = True  # Start True, can be only change to False, if True on download moment outDir
+    # will read again from global defaultDir
     savePath: str = ""  # outDir + savePath during download make the "savePath"
 
     verbose: bool = False  # Verbose output (generate xterm shell)
 
     # Class state Parameter
     fileExist: bool = False
-    filePolicy: DownloadPolicy = DownloadPolicy.DownloadIfNew  # If file exist, policy can change
+    filePolicy: DownloadPolicy = DownloadPolicy.DN  # If file exist, policy can change
 
     # Download Current State
     totalSize: int = 0
@@ -57,17 +53,17 @@ class DownloadItem:
     currentSpeed: int = 0
 
     # Callback pointer
-    chunkUpdateNotify: list = []
+    downloadUpdateNotify: list = []
     completeUpdateNotify: list = []
 
-    def __init__(self, url: str, outDir: str = defaultDir, verbose: bool = False,
+    def __init__(self, url: str, outDir: str = None, verbose: bool = False,
                  chunkUpdateNotify=None, completeUpdateNotify=None):
         # Url extract Data
         if is_string_an_url(url):
             self.url = url
         else:
             raise Exception("Url isn't a downloadable file")
-        name = self.url[self.url.rfind("/") + 1:]  # Name is last part of the url
+        name = extractName2Url(self.url)
 
         # OutDir extract Data
         self.changeSaving(outDir, name)
@@ -76,20 +72,30 @@ class DownloadItem:
         self.verbose = verbose
 
         # Calls-back
-        self.registerChunkUpdateNotify(chunkUpdateNotify)
+        self.registerDownloadUpdateNotify(chunkUpdateNotify)
         self.registerCompleteUpdateNotify(completeUpdateNotify)
 
-    def changeSaving(self, path: str = "", new_name: str = ""):
+    def changeSaving(self, path: str = None, new_name: str = None):
         """
         @path := The directory path where the file will save
         @new_name := The name of the file
         """
-        if new_name == "":
+        global defaultDir
+
+        if new_name is None:
             new_name = self.name
-        if path == "":
-            path = self.outDir
         new_name = removeProblematicCharacter(new_name)
 
+        if path is None:
+            if self.outDirDefault:
+                path = defaultDir
+            else:
+                path = self.outDir
+        else:
+            self.outDirDefault = False
+
+        if path == "":
+            path = self.outDir
         if path[-1] == "/":
             path = path[:-1]
         path = removeProblematicCharacter(path)
@@ -111,6 +117,9 @@ class DownloadItem:
         if di is not None:
             di.currentItem = self
 
+        if self.outDirDefault:  # Reload last global name
+            self.changeSaving()
+
         # Create the Download Directory
         try:
             os.makedirs(self.outDir)
@@ -124,11 +133,11 @@ class DownloadItem:
         # Download Policy based on the policy
         if self.fileExist:
             # If exist, the result depend form the policy chosen
-            if self.filePolicy == DownloadPolicy.Ignore:
+            if self.filePolicy == DownloadPolicy.Ig:
                 return False
-            if self.filePolicy == DownloadPolicy.DownloadIfNew:
+            if self.filePolicy == DownloadPolicy.DN:
                 wgetOption += "-nc "  # --no-clobber if file is present, check the time-stamp
-            if self.filePolicy == DownloadPolicy.Override:
+            if self.filePolicy == DownloadPolicy.Ov:
                 wgetOption += " "
 
         print("\nDownload: " + self.url + "\n\t Start " + self.savePath)
@@ -169,13 +178,25 @@ class DownloadItem:
         else:
             return False
 
+    def downloadStatus(self) -> float:
+        if self.totalSize != 0:
+            return self.downloadSize / self.totalSize
+        else:
+            return 0
+
+    def memStatus(self) -> str:
+        return bytesConvert(self.downloadSize, "k") + "/" + bytesConvert(self.totalSize, "k")
+
+    def speedStatus(self) -> str:
+        return bytesConvert(self.currentSpeed) + "/s"
+
     # CallBack function
 
-    def registerChunkUpdateNotify(self, callbackRegister):
-        self.chunkUpdateNotify.append(callbackRegister)
+    def registerDownloadUpdateNotify(self, callbackRegister):
+        self.downloadUpdateNotify.append(callbackRegister)
 
     def sendChunkUpdateNotify(self):
-        for call in self.chunkUpdateNotify:
+        for call in self.downloadUpdateNotify:
             call(self)
 
     def registerCompleteUpdateNotify(self, callbackRegister):
@@ -185,14 +206,25 @@ class DownloadItem:
         for call in self.completeUpdateNotify:
             call(self)
 
-ExampleItem = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", "./example/", True)
 
+ExampleItem = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", "./example/",
+                           True)
 
 if __name__ == '__main__':
-    item = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", "../example/", True)
-    item.changeSaving(new_name="test")
-    item.download()
+    item1 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg")
+    print("first download")
+    item1.download()
 
-    item = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", verbose=True)
-    item.changeSaving(new_name="test")
-    item.download()
+    item3 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg","./example")
+    print("second download with output dir")
+    item3.download()
+
+    changeDefaultDir("./testDir")
+    print("changed download directory: " + defaultDir)
+    item2 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg")
+
+    print("third download")
+    item1.download()
+    item2.download()
+    item3.download()
+

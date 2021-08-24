@@ -5,6 +5,7 @@ import sys
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 
+
 def is_string_an_url(url_string: str) -> bool:
     # validate_url = URLValidator(verify_exists=True)
     validate_url = URLValidator()
@@ -126,6 +127,54 @@ def is_path_exists_or_creatable(pathname: str) -> bool:
     except OSError:
         return False
 
+
+def removeProblematicCharacter(path: str) -> str:
+    path = path.replace(" ", "_")
+    path = path.replace(":", "_")
+    return path
+
+
+def bytesConvert(B: int, baseMultiplier: str = "Ki") -> str:
+    """
+    @B = byte size
+    @baseMultipler = Can be:
+                1) 'k'/'K' for human version (1Kb = 1000 byte)
+                2) otherwise binary conversion (1Kib = 1024 byte)
+    Return the given bytes as a human friendly or byte form on the scale: K, M, G, or T string
+    """
+
+    B = float(B)
+    K = float(1024)
+    if (baseMultiplier.lower() == "k"):
+        K = float(1000)
+
+    M = float(K ** 2)  # 1,048,576
+    G = float(K ** 3)  # 1,073,741,824
+    T = float(K ** 4)  # 1,099,511,627,776
+    ret = ""
+    if B < K:
+        ret = '{0} {1}'.format(B, 'Bytes' if 0 == B > 1 else 'Byte')
+    elif K <= B < M:
+        ret = '{0:.2f} K'.format(B / K)
+    elif M <= B < G:
+        ret = '{0:.2f} M'.format(B / M)
+    elif G <= B < T:
+        ret = '{0:.2f} G'.format(B / G)
+    elif T <= B:
+        ret = '{0:.2f} T'.format(B / T)
+
+    if (baseMultiplier.lower() == "k"):
+        return ret + "B"
+    else:
+        return ret + "iB"
+
+
+def extractName2Url(url: str):
+    return url[url.rfind("/") + 1:]  # Name is last part of the url
+
+
 if __name__ == '__main__':
+    print(bytesConvert(1000000))  # 1000000 bytes in Mib unit
+    print(bytesConvert(1000000, 'k'))  # 1000000 bytes in MB  unit
     var = is_path_creatable("./example")
     print(var)
