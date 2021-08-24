@@ -1,6 +1,9 @@
 from enum import Enum, auto
 import platform
-from utilityFunction import *
+try:
+    from .utilityFunction import *  # module include
+except:
+    from utilityFunction import *   # local main include
 
 debug: bool = True
 defaultDir: str = "./listDownload/"
@@ -212,18 +215,18 @@ ExampleItem = DownloadItem("https://static.djangoproject.com/img/fundraising-hea
 
 if __name__ == '__main__':
     item1 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg")
-    print("first download")
+    print("################## first download ##################")
     item1.download()
 
-    item3 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg","./example")
-    print("second download with output dir")
-    item3.download()
+    item2 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg","./example")
+    print("################## second download with output dir ##################")
+    item2.download()
 
     changeDefaultDir("./testDir")
-    print("changed download directory: " + defaultDir)
-    item2 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg")
+    print("################## changed download directory: " + defaultDir + "##################")
+    item3 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg")
 
-    print("third download")
+    print("################## third download ##################")
     item1.download()
     item2.download()
     item3.download()

@@ -1,6 +1,5 @@
 import sys
-from downloadSubSystem import *
-
+from .downloadSubSystem import *
 
 class RequestContainer:
     changeNotifyCallback: list = []
