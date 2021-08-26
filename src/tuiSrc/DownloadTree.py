@@ -19,7 +19,7 @@ class FocusableText(urwid.WidgetWrap):
 
     def __init__(self, txt):
         t = urwid.Text(txt)
-        w = urwid.AttrMap(t, 'body', 'focus')
+        w = urwid.AttrMap(t, 'DownloadItem', 'DownloadItemFocus')
         urwid.WidgetWrap.__init__(self, w)
 
     def selectable(self):
@@ -58,10 +58,8 @@ class DownloadDisplay(urwid.WidgetWrap):
                              ('weight', 2, self.speed)]
                             , dividechars=0)
         top = urwid.AttrMap(top, 'DownloadItem', 'DownloadItemFocus')
-
         urwid.WidgetWrap.__init__(self, top)
 
-        # todo: generare il segnale per il click sulla riga
         urwid.connect_signal(self, 'click', self.clickEvent)
 
     def itemUpdateData(self):
@@ -129,12 +127,27 @@ class DownloadTree(TreeBox):
         self.rcObj.registerChangeNotify(self.rcNotify)
         # w = tree  # urwid.AttrMap(tree, 'body', 'focus')
         # urwid.WidgetDecoration.__init__(self, w)
-        tree = NestedTree(CollapsibleArrowTree(self.generateTree()))
+        tree = self.generateTree()
+        # tree = NestedTree(CollapsibleArrowTree(self.generateTree()))
         super().__init__(tree)
 
     def generateTree(self):
         # todo, create method in class to ask at rcObj to generate the tree structure
-        return SimpleTree([(FocusableText('Download List:'), [
+        # requestTree = CollapsibleArrowTree(SimpleTree([(FocusableText('Mid Grandchild One'), [
+        #     (DownloadDisplay(ExampleItem), [
+        #         (FocusableText('Mid Grandchild One'), None),
+        #         (FocusableText('Mid Grandchild Two'), [
+        #             (FocusableText('Mid Grandchild One'), None),
+        #             (FocusableText('Mid Grandchild Two'), None),
+        #         ]),
+        #     ]),
+        #     (FocusableText('Mid Grandchild Two'), None),
+        # ])]))
+        #
+        # # downloadTree = NestedTree(ArrowTree(SimpleTree([(FocusableText('Download List:'), requestTree)])))
+        # downloadTree = NestedTree(SimpleTree([(FocusableText('Download List:'), requestTree)]))
+
+        requestTreeList = [
             (FocusableText('Mid Grandchild One'), [
                 (DownloadDisplay(ExampleItem), [
                     (FocusableText('Mid Grandchild One'), None),
@@ -144,31 +157,24 @@ class DownloadTree(TreeBox):
                     ]),
                 ]),
                 (FocusableText('Mid Grandchild Two'), None),
-            ]),
-            (FocusableText('Mid Grandchild Two'), [
-                (FocusableText('Mid Grandchild One'), [
-                    (FocusableText('Mid Grandchild One'), None),
-                    (FocusableText('Mid Grandchild Two'), None),
-                ]),
-                (FocusableText('Mid Grandchild Two'), [
-                    (FocusableText('Mid Grandchild One'), None),
-                    (FocusableText('Mid Grandchild Two'), [
-                        (FocusableText('Mid Grandchild One'), [
-                            (FocusableText('Mid Grandchild One'), None),
-                            (FocusableText('Mid Grandchild Two'), [
-                                (FocusableText('Mid Grandchild One'), None),
-                                (FocusableText('Mid Grandchild Two'), None),
-                            ]),
-                        ]),
-                        (FocusableText('Mid Grandchild Two'), [
-                            (FocusableText('Mid Grandchild One'), None),
-                            (FocusableText('Mid Grandchild Two'), None),
-                        ]),
-                    ]),
-                ]),
-            ]),
-        ]
-                            )])
+            ])]
+
+        requestTreeList = NestedTree(CollapsibleArrowTree(SimpleTree(requestTreeList)))
+
+        # define outmost tree
+        mainTree = SimpleTree(
+            [
+                (FocusableText('Download List:'),
+                 [
+                     (FocusableText('Child One'), None),
+                     (requestTreeList, None),
+                     (FocusableText('last outer child'), None),
+                 ]
+                 )
+            ]
+        )  # end SimpleTree constructor
+
+        return NestedTree(ArrowTree(mainTree))
 
     def keypress(self, size, key):
         # First get the current focus
