@@ -1,25 +1,25 @@
 import urwid
 from .DownloadTree import *
 
+
 class MenuButton(urwid.Button):
     def __init__(self, caption, callback, param):
         super(MenuButton, self).__init__("")
-        urwid.connect_signal(self, 'click', callback, param)
+        if callback is not None:
+            urwid.connect_signal(self, 'click', callback, param)
         self._w = urwid.AttrMap(urwid.SelectableIcon(
             [u'  \N{BULLET} ', caption], 2), None, 'selected')
 
 
 class CommandMenu(urwid.WidgetPlaceholder):
-    downloadTree: DownloadTree = None
-    def __init__(self, downloadTree: DownloadTree):
-        self.downloadTree = downloadTree
-
-        choices = [("Add Download", self.add_Request),
-                   #("Change Download", self.add_Request),
-                   ("Global Setting", self.item_chosen),
-                   ("Save Setting", self.item_chosen),
-                   ("Load Setting", self.item_chosen),
-                   ("Start Download", self.item_chosen),
+    def __init__(self, addDownloadEvent=None, globSetEvent=None, saveEvent=None,
+                 LoadEvent=None, downloadStartEvent=None):
+        choices = [("Add Download", addDownloadEvent),
+                   # ("Change Download", self.add_Request),
+                   ("Global Setting", globSetEvent),
+                   ("Save Setting", saveEvent),
+                   ("Load Setting", LoadEvent),
+                   ("Start Download", downloadStartEvent),
                    ]
         self.original_widget = urwid.Padding(self.menu(u'Command', choices), left=2, right=2)
 
@@ -30,6 +30,7 @@ class CommandMenu(urwid.WidgetPlaceholder):
         """
         body = [urwid.AttrMap(urwid.Text(title, 'center'), 'heading'), urwid.Divider()]
 
+        # Draw the element passed form choices
         for c in choices:
             button = MenuButton(c[0], c[1], c[0])
             body.append(urwid.AttrMap(button, None, focus_map='reversed'))
@@ -41,11 +42,8 @@ class CommandMenu(urwid.WidgetPlaceholder):
         urwid.connect_signal(done, 'click', self.exit_program)
         self.original_widget = urwid.Filler(urwid.Pile([response, urwid.AttrMap(done, None, focus_map='reversed')]))
 
-    def add_Request(self, button, choice):
-        #todo: Creare widget popup per chiedere i dati parametrici all'utente
-        rc = ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5)
-        self.downloadTree.addRequest(rc)
-
-
     def exit_program(self, button):
         raise urwid.ExitMainLoop()
+
+    def keypress(self, size, key):
+        return key

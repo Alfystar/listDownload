@@ -78,4 +78,5 @@ if __name__ == '__main__':
     if any(x in ["-h", "--help"] for x in sys.argv):
         helpMan()
 
-    loop = urwid.MainLoop(makeTopWindows(), palette=palette).run()
+    mainW = mainWidget()
+    loop = urwid.MainLoop(mainW, palette=mainW.palette).run()
