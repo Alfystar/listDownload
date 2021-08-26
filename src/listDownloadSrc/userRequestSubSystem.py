@@ -1,6 +1,7 @@
 import sys
 from .downloadSubSystem import *
 
+
 class RequestContainer:
     changeNotifyCallback: list = []
 
@@ -8,6 +9,7 @@ class RequestContainer:
     RequestType: str = ""
     RequestName: str = ""
     RequestInfo: str = ""
+    RequestSavePath: str = ""
 
     def __init__(self):
         pass
@@ -37,7 +39,7 @@ class ListRequest(RequestContainer):
         self.RequestType = "List"
         self.baseUrl = baseUrl
         self.endUrl = endUrl
-        if (startNum < endNum):
+        if (startNum > endNum):
             self.startNum = endNum
             self.endNum = startNum
         else:
@@ -47,13 +49,17 @@ class ListRequest(RequestContainer):
         self.outDirPath = outDirPath
 
         self.RequestName = extractName2Url(self.baseUrl + self.digit * "#" + self.endUrl)
-        self.RequestInfo = self.digit * "#" + " from " + str(self.startNum) + "->" + str(self.endNum)
+        self.RequestInfo = "From " + str(self.startNum) + "->" + str(self.endNum)
+        if outDirPath == None:
+            self.RequestSavePath = defaultDir
+        else:
+            self.RequestSavePath = outDirPath
 
     def generateItem(self) -> list:
         if self.baseUrl is None or self.endUrl is None or self.startNum is None or self.endNum is None:
             raise Exception("Parameter not valid")
 
-        itemList:list = []
+        itemList: list = []
         # Genero la lista degli url e le opzioni associate
         for i in range(self.startNum, self.endNum + 1):
             num = "{num:0{dig}d}".format(dig=self.digit, num=i)

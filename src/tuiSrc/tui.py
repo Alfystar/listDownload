@@ -28,6 +28,8 @@ palette = [
     # ProgressBar Palette
     ('normal', 'black', 'light gray'),
     ('complete', 'black', 'dark red'),
+    ('normalTot', 'black', 'light blue'),
+    ('completeTot', 'black', 'dark green'),
 ]
 
 focus_map = {
@@ -50,11 +52,15 @@ def makeHeader():
 
 
 def makeBody():
-    rightSide = CommandMenu()
-    leftSide = urwid.Overlay(DownloadTree(RequestContainer()), urwid.SolidFill("-"),
+    RequestList = [ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5),
+                   ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 15, 20)]
+    downloadTree = DownloadTree(RequestList)
+    leftSide = urwid.Overlay(downloadTree, urwid.SolidFill("-"),
                              align='left', width=('relative', 100),
                              valign='bottom', height=('relative', 100),
                              top=1)
+    rightSide = CommandMenu(downloadTree)
+
     top = urwid.Columns([('weight', 2, rightSide), ('weight', 7, leftSide)])
     return top
 

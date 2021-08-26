@@ -1,5 +1,5 @@
 import urwid
-
+from .DownloadTree import *
 
 class MenuButton(urwid.Button):
     def __init__(self, caption, callback, param):
@@ -10,9 +10,12 @@ class MenuButton(urwid.Button):
 
 
 class CommandMenu(urwid.WidgetPlaceholder):
-    def __init__(self):
-        choices = [("Add Download", self.item_chosen),
-                   #("Change Download", self.item_chosen),
+    downloadTree: DownloadTree = None
+    def __init__(self, downloadTree: DownloadTree):
+        self.downloadTree = downloadTree
+
+        choices = [("Add Download", self.add_Request),
+                   #("Change Download", self.add_Request),
                    ("Global Setting", self.item_chosen),
                    ("Save Setting", self.item_chosen),
                    ("Load Setting", self.item_chosen),
@@ -37,6 +40,12 @@ class CommandMenu(urwid.WidgetPlaceholder):
         done = urwid.Button(u'Ok')
         urwid.connect_signal(done, 'click', self.exit_program)
         self.original_widget = urwid.Filler(urwid.Pile([response, urwid.AttrMap(done, None, focus_map='reversed')]))
+
+    def add_Request(self, button, choice):
+        #todo: Creare widget popup per chiedere i dati parametrici all'utente
+        rc = ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5)
+        self.downloadTree.addRequest(rc)
+
 
     def exit_program(self, button):
         raise urwid.ExitMainLoop()

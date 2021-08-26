@@ -52,7 +52,7 @@ class DownloadItem:
 
     # Download Current State
     totalSize: int = 0
-    downloadSize: int = 0
+    downloadedSize: int = 0
     currentSpeed: int = 0
 
     # Callback pointer
@@ -183,12 +183,12 @@ class DownloadItem:
 
     def downloadStatus(self) -> float:
         if self.totalSize != 0:
-            return self.downloadSize / self.totalSize
+            return self.downloadedSize / self.totalSize
         else:
             return 0
 
     def memStatus(self) -> str:
-        return bytesConvert(self.downloadSize, "k") + "/" + bytesConvert(self.totalSize, "k")
+        return bytesConvert(self.downloadedSize, "k") + "/" + bytesConvert(self.totalSize, "k")
 
     def speedStatus(self) -> str:
         return bytesConvert(self.currentSpeed) + "/s"
