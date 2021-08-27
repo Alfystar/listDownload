@@ -79,4 +79,4 @@ if __name__ == '__main__':
         helpMan()
 
     mainW = mainWidget()
-    loop = urwid.MainLoop(mainW, palette=mainW.palette).run()
+    mainW.loop.run()

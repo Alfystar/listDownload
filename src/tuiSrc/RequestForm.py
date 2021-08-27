@@ -13,9 +13,11 @@ class RequestForm(urwid.WidgetPlaceholder):
         close_button = urwid.Button("Click Me")
         urwid.connect_signal(close_button, 'click', self.formComplete)
 
-        # self.original_widget = urwid.Text("CIAOOOO")
-        # self.original_widget = urwid.SolidFill("/")
-        self.original_widget = urwid.Filler(urwid.Padding(close_button, 'center', 15))
+        super().__init__(urwid.LineBox(urwid.Overlay(urwid.Filler(urwid.Padding(close_button, 'center', 15)),
+                                                           urwid.SolidFill("\N{FULL BLOCK}"),
+                                                           align='center', width=('relative', 100),
+                                                           valign='middle', height=('relative', 100),
+                                                           top=1, bottom=1, left=2, right=2)))
 
     def formComplete(self, button):
         if self.formCompleteNotify is not None:

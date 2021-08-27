@@ -84,7 +84,6 @@ class DownloadDisplay(urwid.WidgetWrap):
         """
         if self._command_map[key] != ACTIVATE:
             return key
-
         self._emit('click')
 
     def mouse_event(self, size, event, button, x, y, focus):

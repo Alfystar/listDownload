@@ -12,8 +12,10 @@ class MenuButton(urwid.Button):
 
 
 class CommandMenu(urwid.WidgetPlaceholder):
-    def __init__(self, addDownloadEvent=None, globSetEvent=None, saveEvent=None,
-                 LoadEvent=None, downloadStartEvent=None):
+
+    # ***Event are calls-back, called when button are clicked, they recive: ***Event(button, choiseStr)
+    def __init__(self, addDownloadEvent=None, globSetEvent=None, saveEvent=None, LoadEvent=None,
+                 downloadStartEvent=None):
         choices = [("Add Download", addDownloadEvent),
                    # ("Change Download", self.add_Request),
                    ("Global Setting", globSetEvent),
@@ -21,7 +23,7 @@ class CommandMenu(urwid.WidgetPlaceholder):
                    ("Load Setting", LoadEvent),
                    ("Start Download", downloadStartEvent),
                    ]
-        self.original_widget = urwid.Padding(self.menu(u'Command', choices), left=2, right=2)
+        super().__init__(urwid.Padding(self.menu(u'Command', choices), left=2, right=2))
 
     def menu(self, title, choices):
         """
@@ -45,5 +47,5 @@ class CommandMenu(urwid.WidgetPlaceholder):
     def exit_program(self, button):
         raise urwid.ExitMainLoop()
 
-    def keypress(self, size, key):
-        return key
+    # def keypress(self, size, key):
+    #     return key
