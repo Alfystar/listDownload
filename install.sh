@@ -29,8 +29,9 @@ fi
 sudo chmod +x listDownload.py
 
 REPO_DIR=$(pwd)
-cd /usr/local/bin/
-sudo ln -s $REPO_DIR/listDownload.py
-
+mkdir -p ~/.local/bin
+cd ~/.local/bin
+ln -s $REPO_DIR/listDownload.py
+echo "If 'listDownload.py' isn't reach from the PATH, PLEASE reboot the system"
 # Export the current path on Mark this setup task as done.
 # printf '\n# List download Path add\nPATH="$PATH:'$REPO_DIR'"\n' >> ~/.profile
