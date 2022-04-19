@@ -1,4 +1,5 @@
 import urwid
+
 from .CommandMenu import *
 from .RequestForm import *
 from .DownloadTree import *
@@ -49,7 +50,20 @@ class mainWidget(urwid.WidgetWrap):
     def __init__(self):
         self.topWindow = self.makeTopWindows()
         super().__init__(self.topWindow)
-        self.loop = urwid.MainLoop(self, palette=self.palette)
+        screen = urwid.raw_display.Screen()
+        screen.set_terminal_properties(256)
+        self.loop = urwid.MainLoop(self, palette=self.palette,
+                                   screen=screen,
+                                   unhandled_input=self.global_input
+                                   )
+
+    def global_input(self, key):
+        if key in ('q', 'Q'):
+            raise urwid.ExitMainLoop()
+        elif key == "r":
+            self.loop.screen.stop()
+            self.loop.screen.start()
+            self.loop.draw_screen()
 
     def makeHeader(self):
         # big title
@@ -63,33 +77,24 @@ class mainWidget(urwid.WidgetWrap):
         head = urwid.Pile([bt, version])
         return head
 
-    def addRequestComplete(self):
+    """Callback chiamata dalla RequestForm quando è stata correttamente impostata"""
+    def addRequestComplete_callBack(self):
         rc = ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5)
         self.downloadTreeView.addRequest(rc)
 
+        # Restoro il body originale
         self.topWindow._body = self.originalBody
 
     def add_RequestForm(self, button, choice):
-        print(choice)
-        self.originalBody = self.topWindow._body  # Save the correct Body
+        print(button, choice)
+        requestForm = RequestForm(self.addRequestComplete_callBack)
 
-        # topWindow._body = urwid.Overlay(urwid.Filler(urwid.Text("CIAOOOO")), originalBody,
-        #                                 align='center', width=('relative', 70),
-        #                                 valign='bottom', height=('relative', 70))
         # Show on the display the Request Form
-        self.topWindow._body = urwid.Overlay(RequestForm(self.addRequestComplete), self.originalBody,
+        self.topWindow._body = urwid.Overlay(requestForm , self.originalBody,
                                              align='center', width=('relative', 70),
                                              valign='bottom', height=('relative', 70))
-        self.loop.draw_screen()
-        # todo: Capire come emettere un segnale per far ricalcolare lo schermo
-        # self.draw_screen()
-        # super()._walker.clear_cache()
-        # signals.emit_signal(self._walker, "modified")
-        # topWindow._body = urwid.SolidFill("#")
-        # close_button = urwid.Button("Click Me")
-        # # urwid.connect_signal(close_button, 'click', self.formComplete)
-        #
-        # topWindow._body = urwid.Filler(urwid.Padding(close_button, 'center', 15))
+        # self.topWindow._body = requestForm
+
 
     def makeBody(self):
         RequestList = [ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5),
@@ -113,7 +118,8 @@ class mainWidget(urwid.WidgetWrap):
         ]))
 
     def makeTopWindows(self):
-        self.topWindow = urwid.Frame(self.makeBody(), self.makeHeader(), self.makeFooter())
+        self.originalBody = self.makeBody()
+        self.topWindow = urwid.Frame(self.originalBody, self.makeHeader(), self.makeFooter())
         return self.topWindow
 
     def exitTUI(self):

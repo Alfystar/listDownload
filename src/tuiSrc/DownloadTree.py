@@ -30,6 +30,9 @@ class FocusableText(urwid.WidgetWrap):
     def keypress(self, size, key):
         return key
 
+"""
+This class display the status of a specifc download
+"""
 
 class DownloadDisplay(urwid.WidgetWrap):
     item: DownloadItem = None
@@ -85,6 +88,7 @@ class DownloadDisplay(urwid.WidgetWrap):
         if self._command_map[key] != ACTIVATE:
             return key
         self._emit('click')
+        return None
 
     def mouse_event(self, size, event, button, x, y, focus):
         """
@@ -117,6 +121,10 @@ class DownloadDisplay(urwid.WidgetWrap):
         super().refresh()
 
 
+"""
+This class is the DAD for specific group of downolading file, it containt the sub level download items
+"""
+
 class RequestContainerDisplay(urwid.WidgetWrap):
     rc: RequestContainer = None
     subBranch = []
@@ -144,7 +152,7 @@ class RequestContainerDisplay(urwid.WidgetWrap):
 
         urwid.WidgetWrap.__init__(self, top)
 
-    def generateSubBranch(self): # Generate subBranch for the tree
+    def generateSubBranch(self):  # Generate subBranch for the tree
         self.subBranch = []
         for it in self.rc.generateItem():
             self.subBranch.append((DownloadDisplay(it, self.dataReload), None))
@@ -159,22 +167,27 @@ class RequestContainerDisplay(urwid.WidgetWrap):
             memTot += el[0].item.totalSize
             memCur += el[0].item.downloadedSize
             curSpeed += el[0].item.currentSpeed
-        if(memTot != 0):
-            self.bar.set_completion(memCur/memTot)
+        if (memTot != 0):
+            self.bar.set_completion(memCur / memTot)
         else:
             self.bar.set_completion(0)
-        self.speed.set_text(bytesConvert(curSpeed)+"/s")
-
+        self.speed.set_text(bytesConvert(curSpeed) + "/s")
 
     def selectable(self):
         return True
+
+
+"""
+This class is the top level of the download tree
+Is the conteiner for the leaf item (the active download)
+"""
 
 
 class DownloadTree(TreeBox):
     # Data List
     rcList: list = []  # List of the different RequestContainer, used to generate theirs item list
 
-    tree = None # Global Object for the tree
+    tree = None  # Global Object for the tree
     requestTreeList = []  # List of the Tree-nodes compose by RequestContainerDisplay & DownloadDisplay
 
     # TreeBox := Is the final widget
@@ -182,7 +195,9 @@ class DownloadTree(TreeBox):
     # CollapsibleArrowTree := CollapsibleTree with Arrow Decoration
     # SimpleTree := Tree data structure in concrete
 
-    def __init__(self, rcList=[]):
+    def __init__(self, rcList=None):
+        if rcList is None:
+            rcList = []
         self.rcList = rcList
         self.tree = self.generateTree()
         self.tree.collapse_all()
@@ -232,7 +247,7 @@ class DownloadTree(TreeBox):
                 (FocusableText('Download List:'),
                  [
                      (requestTree, None),
-                     (FocusableText('...'), None)           # todo: Connect AddRequest
+                     (FocusableText('...'), None)  # todo: Connect AddRequest
                  ]
                  )
             ]
@@ -254,7 +269,9 @@ class DownloadTree(TreeBox):
     def keypress(self, size, key):
         # First get the current focus
         focus = self.get_focus()
-        # Than execute the command anyway
+        # Than execcute the command anyway
+        if key == "c" or key == "e":
+            key = key.upper()
         super().keypress(size, key)
 
         # Finaly, if key was 'left' and focus no change than i'm on the root and the user want go out

@@ -24,4 +24,11 @@ class RequestForm(urwid.WidgetPlaceholder):
             self.formCompleteNotify()
 
     def keypress(self, size, key):
-        return key
+        """
+        Send 'click' signal on 'enter' command.
+        """
+        print(key)
+        if self._command_map[key] != ACTIVATE:
+            return key
+        self._emit('click')
+        return None

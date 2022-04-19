@@ -1,9 +1,10 @@
 from enum import Enum, auto
 import platform
+
 try:
     from .utilityFunction import *  # module include
 except:
-    from utilityFunction import *   # local main include
+    from utilityFunction import *  # local main include
 
 debug: bool = True
 defaultDir: str = "./listDownload/"
@@ -218,7 +219,7 @@ if __name__ == '__main__':
     print("################## first download ##################")
     item1.download()
 
-    item2 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg","./example")
+    item2 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", "./example")
     print("################## second download with output dir ##################")
     item2.download()
 
@@ -230,4 +231,3 @@ if __name__ == '__main__':
     item1.download()
     item2.download()
     item3.download()
-

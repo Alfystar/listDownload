@@ -5,6 +5,8 @@
 # -i test.txt -o testDir
 
 # Personal Lib
+import logging
+from time import sleep
 
 from src.DownloadExec import *
 from src.tuiSrc.tui import *
@@ -74,9 +76,20 @@ def helpMan():
 #     # print('Concurrency Download :' + str(min(pDW, nDownload)))
 #
 #
+
+import threading
+
+
+def refresh(_loop, _data):
+    # main_loop.screen.rendeder((500,500))
+    main_loop.set_alarm_in(1, refresh)
+
 if __name__ == '__main__':
     if any(x in ["-h", "--help"] for x in sys.argv):
         helpMan()
 
     mainW = mainWidget()
-    mainW.loop.run()
+
+    main_loop = mainW.loop
+    main_loop.set_alarm_in(0, refresh)
+    main_loop.run()
