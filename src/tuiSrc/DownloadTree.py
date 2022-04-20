@@ -8,6 +8,7 @@ from urwid import ACTIVATE
 from urwid.util import is_mouse_press
 
 # todo: remove ExampleItem & ListRequest, is only for debug
+from .RequestForm import RequestForm
 from ..listDownloadSrc.userRequestSubSystem import RequestContainer, ListRequest
 from ..listDownloadSrc.downloadSubSystem import DownloadItem, ExampleItem
 from ..listDownloadSrc.utilityFunction import bytesConvert
@@ -30,9 +31,11 @@ class FocusableText(urwid.WidgetWrap):
     def keypress(self, size, key):
         return key
 
+
 """
-This class display the status of a specifc download
+This class display the status of a specific download
 """
+
 
 class DownloadDisplay(urwid.WidgetWrap):
     item: DownloadItem = None
@@ -122,11 +125,13 @@ class DownloadDisplay(urwid.WidgetWrap):
 
 
 """
-This class is the DAD for specific group of downolading file, it containt the sub level download items
+This class is the DAD for specific group of downloading file, it contains the sub level download items
 """
 
-class RequestContainerDisplay(urwid.WidgetWrap):
+
+class RequestContainerDisplay(urwid.PopUpLauncher):
     rc: RequestContainer = None
+    dad = None  # type 'DownloadTree' normally
     subBranch = []
 
     # Download Display Objects
@@ -134,8 +139,12 @@ class RequestContainerDisplay(urwid.WidgetWrap):
     bar: urwid.ProgressBar = None
     speed: urwid.Text = None
 
-    def __init__(self, rc: RequestContainer):
+    # PopUp widget
+    popUpWidgetRef = None
+
+    def __init__(self, rc: RequestContainer, dad):
         self.rc = rc
+        self.dad = dad
         self.info = urwid.Text(
             self.rc.RequestType + "  " + self.rc.RequestName + "  " + self.rc.RequestInfo + "\nin: " + self.rc.RequestSavePath)
         self.bar = urwid.ProgressBar('normalTot', 'completeTot', 0, satt='c')
@@ -150,7 +159,44 @@ class RequestContainerDisplay(urwid.WidgetWrap):
                             , dividechars=0)
         top = urwid.AttrMap(top, 'DownloadItem', 'DownloadItemFocus')
 
-        urwid.WidgetWrap.__init__(self, top)
+        #  Genero il bottone, ma il nome lo scrivo attraverso l'icona selezionabile
+        #         super(popUpButtonActivator, self).__init__(urwid.Button(caption))
+        #         self.original_widget._w = urwid.AttrMap(urwid.SelectableIcon([u'  \N{BULLET} ', caption], 2), None, 'selected')
+        #
+        #         # Riassegno le variabili passate
+        #         if popUpWidget is not None:
+        #             self.popUpWidgetRef = popUpWidget
+        #         if widgedSize is not None:
+        #             self.widgetSizeRef = widgedSize
+        #
+        #         # Connetto il segnale per mostrare il popup
+        #         urwid.connect_signal(self.original_widget, 'click', lambda button: (self.open_pop_up(), self.popUpWidgetRef.resetParam()))
+        #
+        #     def create_pop_up(self):  # Genera in loco un widget, e in questo caso assegna al pulsante la chiusura
+        #         urwid.connect_signal(self.popUpWidgetRef, 'close', lambda button: self.close_pop_up())
+        super(RequestContainerDisplay, self).__init__(top)
+        # todo: quando ci saranno più tipi di download, specializzare i form
+        self.popUpWidgetRef = RequestForm(formCompleteNotify=self.updateRequestListDownload_callback)
+
+    def create_pop_up(self):  # Genera in loco un widget, e in questo caso assegna al pulsante la chiusura
+        urwid.connect_signal(self.popUpWidgetRef, 'close', lambda button: self.close_pop_up())
+        return self.popUpWidgetRef
+
+    def get_pop_up_parameters(self):  # assegna posizione relativa rispetto pulsante
+        return {'left': -2, 'top': 0, 'overlay_width': 120, 'overlay_height': 15}
+
+    def keypress(self, size, key):
+        if key == 'enter':
+            # todo: quando ci saranno più tipi specializzerò il reset
+            if type(self.rc) == ListRequest:
+                self.popUpWidgetRef.resetParam(self.rc.baseUrl, self.rc.endUrl, self.rc.startNum, self.rc.endNum,
+                                               self.rc.digit)
+            self.open_pop_up()
+        return key
+
+    def updateRequestListDownload_callback(self, basePath, endPath, startIndex, endIndex, digit=2):
+        rc = ListRequest(basePath, endPath, startIndex, endIndex, digit)
+        self.dad.changeRequest(self.rc, rc)
 
     def generateSubBranch(self):  # Generate subBranch for the tree
         self.subBranch = []
@@ -203,12 +249,10 @@ class DownloadTree(TreeBox):
         self.tree.collapse_all()
         super().__init__(self.tree)
 
-    def addRequest(self, rc: RequestContainer):
-        self.rcList.append(rc)
+    def addRequest(self, rc: RequestContainer, index=-1):
+        self.rcList.insert(index, rc)
+        self.createAndAppendBranch(rc, index)
         rc.registerChangeNotify(self.rcNotify)
-        self.createAndAppendBranch(rc)
-        # self.tree = self.generateTree()
-        # super().__init__(self.tree)
         super().refresh()
 
     def rmRequest(self, rc: RequestContainer):
@@ -218,6 +262,12 @@ class DownloadTree(TreeBox):
             print("Index not found")
             return
         self.rcList.pop(index)
+        self.requestTreeList.pop(index)
+        super().refresh()
+        return index
+
+    def changeRequest(self, rcOld, rcNew):
+        self.addRequest(rcNew, self.rmRequest(rcOld))
         return
 
     def generateTree(self):
@@ -257,14 +307,12 @@ class DownloadTree(TreeBox):
 
         return NestedTree(ArrowTree(mainTree))
 
-    def createAndAppendBranch(self, rc: RequestContainer):
-        ItemList = rc.generateItem()
-        rcd = RequestContainerDisplay(rc)
+    def createAndAppendBranch(self, rc: RequestContainer, index=-1):
+        # todo: capire perchè inserisce nella posizone dopo
+        rcd = RequestContainerDisplay(rc, self)
         subBranch = rcd.subBranch
-        branch = (RequestContainerDisplay(rc), subBranch)
-        # (requestTree, None)
-        self.requestTreeList.append(branch)
-        # self.requestTreeList.append((branch, None))
+        branch = (RequestContainerDisplay(rc, self), subBranch)
+        self.requestTreeList.insert(index, branch)
 
     def keypress(self, size, key):
         # First get the current focus

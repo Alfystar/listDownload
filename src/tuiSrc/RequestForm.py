@@ -21,9 +21,8 @@ class RequestForm(urwid.WidgetWrap):
     formCompleteNotify = None
     formAbortNotify = None
 
-    def __init__(self, formCompleteNotify=None, formAbortNotify=None):
+    def __init__(self, formCompleteNotify=None):
         self.formCompleteNotify = formCompleteNotify
-        self.formAbortNotify = formAbortNotify
 
         listBody = [urwid.AttrMap(urwid.Text("Parametri", 'center'), 'heading'), urwid.Divider()]
 
@@ -58,14 +57,14 @@ class RequestForm(urwid.WidgetWrap):
 
         super().__init__(urwid.LineBox(list))
 
-    def resetParam(self):
+    def resetParam(self, base="https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", end=".pdf", startIndex=0, endIndex=0, digit=2):
         # default Val
-        self.basePath.set_edit_text("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_")  # todo:DebugFase
-        self.endPath.set_edit_text(".pdf")  # todo:DebugFase
+        self.basePath.set_edit_text(base)
+        self.endPath.set_edit_text(end)
 
-        self.startIndexText.set_edit_text("0")
-        self.endIndexText.set_edit_text("0")
-        self.nDigitText.set_edit_text("2")
+        self.startIndexText.set_edit_text(str(startIndex))
+        self.endIndexText.set_edit_text(str(endIndex))
+        self.nDigitText.set_edit_text(str(digit))
 
     def getDimension(self):
         return {'left': 0, 'top': -2, 'overlay_width': 90, 'overlay_height': 15}
@@ -95,8 +94,8 @@ class RequestForm(urwid.WidgetWrap):
 
         valid = True
         if self.formCompleteNotify is not None:
-            valid = self.formCompleteNotify(basePathStr, endPathStr, int(startIndexStr), int(endIndexStr),
-                                            int(nDigitStr))
+            valid = self.formCompleteNotify(basePathStr, endPathStr,
+                                            int(startIndexStr), int(endIndexStr), int(nDigitStr))
 
         if type(valid) != str:
             self._emit("close")

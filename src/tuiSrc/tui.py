@@ -81,6 +81,7 @@ class mainWidget(urwid.WidgetWrap):
         return head
 
     def makeBody(self):
+        # todo: da rimuovere, presenti solo per debug
         RequestList = [ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5),
                        ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 15, 20)]
         self.downloadTreeView = DownloadTree(RequestList)
