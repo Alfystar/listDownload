@@ -40,6 +40,8 @@ class mainWidget(urwid.WidgetWrap):
         ('complete', 'black', 'dark red'),
         ('normalTot', 'black', 'light blue'),
         ('completeTot', 'black', 'dark green'),
+        # Popup Palette
+        ('popbg', 'white', 'dark blue')
     ]
 
     focus_map = {
@@ -54,7 +56,8 @@ class mainWidget(urwid.WidgetWrap):
         screen.set_terminal_properties(256)
         self.loop = urwid.MainLoop(self, palette=self.palette,
                                    screen=screen,
-                                   unhandled_input=self.global_input
+                                   unhandled_input=self.global_input,
+                                   pop_ups=True
                                    )
 
     def global_input(self, key):
@@ -77,25 +80,6 @@ class mainWidget(urwid.WidgetWrap):
         head = urwid.Pile([bt, version])
         return head
 
-    """Callback chiamata dalla RequestForm quando è stata correttamente impostata"""
-    def addRequestComplete_callBack(self):
-        rc = ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5)
-        self.downloadTreeView.addRequest(rc)
-
-        # Restoro il body originale
-        self.topWindow._body = self.originalBody
-
-    def add_RequestForm(self, button, choice):
-        print(button, choice)
-        requestForm = RequestForm(self.addRequestComplete_callBack)
-
-        # Show on the display the Request Form
-        self.topWindow._body = urwid.Overlay(requestForm , self.originalBody,
-                                             align='center', width=('relative', 70),
-                                             valign='bottom', height=('relative', 70))
-        # self.topWindow._body = requestForm
-
-
     def makeBody(self):
         RequestList = [ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5),
                        ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 15, 20)]
@@ -104,7 +88,7 @@ class mainWidget(urwid.WidgetWrap):
                                  align='left', width=('relative', 100),
                                  valign='bottom', height=('relative', 100),
                                  top=1)
-        rightSide = CommandMenu(addDownloadEvent=self.add_RequestForm)
+        rightSide = CommandMenu(addDownloadEvent=self.addRequestComplete_callBack)
 
         top = urwid.Columns([('weight', 2, rightSide), ('weight', 7, leftSide)])
         return top
@@ -113,17 +97,27 @@ class mainWidget(urwid.WidgetWrap):
         return urwid.LineBox(urwid.Pile([
             urwid.Text("Program key"),
             urwid.Text("CommandList := ←↑↓→ navigate, 'Enter' to select form button."),
-            urwid.Text("DownloadTree:= ←↑↓→ navigate, -/+ collapse/expand, C/E allVariant, '['/']' Same level move"),
+            urwid.Text("DownloadTree:= ←↑↓→ navigate, -/+ collapse/expand, C/E allVariant, '['/']' Same level move."),
             # urwid.Divider()
         ]))
 
     def makeTopWindows(self):
-        self.originalBody = self.makeBody()
-        self.topWindow = urwid.Frame(self.originalBody, self.makeHeader(), self.makeFooter())
+        self.topWindow = urwid.Frame(self.makeBody(), self.makeHeader(), self.makeFooter())
         return self.topWindow
 
     def exitTUI(self):
         raise urwid.ExitMainLoop()
 
-    # def keypress(self, size, key):
-    #     return key
+    """
+    Callbacks Zone
+    """
+
+    def addRequestComplete_callBack(self, basePath, endPath, startIndex, endIndex, digit=2):
+        # rc = ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5)
+        rc = ListRequest(basePath, endPath, startIndex, endIndex, digit)
+
+        try:
+            self.downloadTreeView.addRequest(rc)
+        except Exception as e:
+            return str(e)
+        return True

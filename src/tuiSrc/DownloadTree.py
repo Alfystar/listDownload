@@ -85,10 +85,10 @@ class DownloadDisplay(urwid.WidgetWrap):
         """
         Send 'click' signal on 'enter' command.
         """
-        if self._command_map[key] != ACTIVATE:
-            return key
-        self._emit('click')
-        return None
+        if self._command_map[key] == ACTIVATE:
+            self._emit('click')
+            return None
+        return super().keypress(size, key)
 
     def mouse_event(self, size, event, button, x, y, focus):
         """

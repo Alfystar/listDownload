@@ -19,8 +19,8 @@ class PopUpDialog(urwid.WidgetWrap):
 
 
 class ThingWithAPopUp(urwid.PopUpLauncher):
-    def __init__(
-            self):  # Definisce un pulsante che quando viene cliccato scatena l'evento open_pop_up, che all'interno chiama create_pop_up
+    # Definisce un pulsante che quando viene cliccato scatena l'evento open_pop_up, che all'interno chiama create_pop_up
+    def __init__(self):
         self.__super.__init__(urwid.Button("click-me"))
         urwid.connect_signal(self.original_widget, 'click',
                              lambda button: self.open_pop_up())
