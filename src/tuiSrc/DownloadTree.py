@@ -250,7 +250,10 @@ class DownloadTree(TreeBox):
         super().__init__(self.tree)
 
     def addRequest(self, rc: RequestContainer, index=-1):
-        self.rcList.insert(index, rc)
+        if index == -1:
+            self.rcList.insert(index, rc)
+        else:
+            self.rcList.append(rc)
         self.createAndAppendBranch(rc, index)
         rc.registerChangeNotify(self.rcNotify)
         super().refresh()
@@ -312,7 +315,10 @@ class DownloadTree(TreeBox):
         rcd = RequestContainerDisplay(rc, self)
         subBranch = rcd.subBranch
         branch = (RequestContainerDisplay(rc, self), subBranch)
-        self.requestTreeList.insert(index, branch)
+        if index == -1:
+            self.requestTreeList.append(branch)
+        else:
+            self.requestTreeList.insert(index, branch)
 
     def keypress(self, size, key):
         # First get the current focus
