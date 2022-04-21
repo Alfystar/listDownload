@@ -18,18 +18,14 @@ def changeDefaultDir(newDir) -> None:
 
     defaultDir = newDir
 
+def getDefaultDir() -> str:
+    return defaultDir
+
 
 class DownloadPolicy(Enum):
     Ov = auto()  # Override         := Override the File if already exist
     DN = auto()  # DownloadIfNew    := If the webFile is newly download
     Ig = auto()  # Jump             := Jump over this File if already exist
-
-
-class DownloadInfo:
-    currentItem = None  # type DownloadItem, but isn't possible force because the first depend from the second
-
-    def __init__(self):
-        pass
 
 
 class DownloadItem:
@@ -70,12 +66,14 @@ class DownloadItem:
         name = extractName2Url(self.url)
 
         # OutDir extract Data
+        if outDir is None:
+            outDir = getDefaultDir()
         self.changeSaving(outDir, name)
 
         # Verbose extract Data
         self.verbose = verbose
 
-        # Calls-back
+        # Calls-back registering
         self.registerDownloadUpdateNotify(chunkUpdateNotify)
         self.registerCompleteUpdateNotify(completeUpdateNotify)
 
@@ -114,12 +112,10 @@ class DownloadItem:
         self.savePath = savePath
         self.fileExist = os.path.isfile(self.savePath)
 
-    def download(self, di: DownloadInfo = None) -> bool:
+    def download(self) -> bool:
         """
         This Function return true if file are effectively downloaded
         """
-        if di is not None:
-            di.currentItem = self
 
         if self.outDirDefault:  # Reload last global name
             self.changeSaving()
@@ -177,7 +173,7 @@ class DownloadItem:
             print("OS not Supported")
         # todo: ottenere il return code dei terminali in base al successo o meno del download
         print("\n\t END " + self.savePath)
-        if (retCode == 0):
+        if retCode == 0:
             return True
         else:
             return False
@@ -194,17 +190,19 @@ class DownloadItem:
     def speedStatus(self) -> str:
         return bytesConvert(self.currentSpeed) + "/s"
 
-    # CallBack function
+    # Register CallBack function Zone
+    def registerDownloadUpdateNotify(self, chunkUpdateNotify):
+        if chunkUpdateNotify is not None:
+            self.downloadUpdateNotify.append(chunkUpdateNotify)
 
-    def registerDownloadUpdateNotify(self, callbackRegister):
-        self.downloadUpdateNotify.append(callbackRegister)
+    def registerCompleteUpdateNotify(self, completeUpdateNotify):
+        if completeUpdateNotify is not None:
+            self.completeUpdateNotify.append(completeUpdateNotify)
 
+    # Send CallBack function Zone
     def sendChunkUpdateNotify(self):
         for call in self.downloadUpdateNotify:
             call(self)
-
-    def registerCompleteUpdateNotify(self, callbackRegister):
-        self.completeUpdateNotify.append(callbackRegister)
 
     def sendCompleteUpdateNotify(self):
         for call in self.completeUpdateNotify:
@@ -213,6 +211,8 @@ class DownloadItem:
 
 ExampleItem = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", "./example/",
                            True)
+
+
 
 if __name__ == '__main__':
     item1 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg")

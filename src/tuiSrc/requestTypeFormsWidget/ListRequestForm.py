@@ -1,22 +1,8 @@
 import urwid
-from .DownloadTree import *
+from src.listDownloadSrc.requestTypes.ListRequest import ListRequest
 
 
-class PopUpDialog(urwid.WidgetWrap):
-    """A dialog that appears with nothing but a close button """
-    signals = ['close']
-
-    def __init__(self):
-        close_button = urwid.Button("that's pretty cool")
-        urwid.connect_signal(close_button, 'click', lambda button: self._emit("close"))
-        pile = urwid.Pile([urwid.Text(
-            "^^  I'm attached to the widget that opened me. "
-            "Try resizing the window!\n"), close_button])
-        fill = urwid.Filler(pile)
-        self.__super.__init__(urwid.AttrWrap(fill, 'popbg'))
-
-
-class RequestForm(urwid.WidgetWrap):
+class ListRequestForm(urwid.WidgetWrap):
     signals = ['close']
     formCompleteNotify = None
     formAbortNotify = None
@@ -94,8 +80,8 @@ class RequestForm(urwid.WidgetWrap):
 
         valid = True
         if self.formCompleteNotify is not None:
-            valid = self.formCompleteNotify(basePathStr, endPathStr,
-                                            int(startIndexStr), int(endIndexStr), int(nDigitStr))
+            rc = ListRequest(basePathStr, endPathStr, int(startIndexStr), int(endIndexStr), int(nDigitStr))
+            valid = self.formCompleteNotify(rc)
 
         if type(valid) != str:
             self._emit("close")

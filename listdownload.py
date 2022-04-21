@@ -6,10 +6,12 @@
 
 # Personal Lib
 import logging
+import sys
 from time import sleep
 
 from src.DownloadExec import *
-from src.tuiSrc.tui import *
+from src.tuiSrc.MainWidget import MainWidget
+from src.tuiSrc.tuiGlobal import uiStart
 
 
 def helpMan():
@@ -77,19 +79,10 @@ def helpMan():
 #
 #
 
-import threading
-
-
-def refresh(_loop, _data):
-    # main_loop.screen.rendeder((500,500))
-    main_loop.set_alarm_in(1, refresh)
 
 if __name__ == '__main__':
     if any(x in ["-h", "--help"] for x in sys.argv):
         helpMan()
 
-    mainW = mainWidget()
-
-    main_loop = mainW.loop
-    main_loop.set_alarm_in(0, refresh)
-    main_loop.run()
+    mainW = MainWidget()
+    uiStart(mainW)

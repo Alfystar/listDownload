@@ -1,3 +1,5 @@
+import time
+
 from urwidtrees.widgets import TreeBox
 from urwidtrees.tree import SimpleTree
 from urwidtrees.nested import NestedTree
@@ -8,9 +10,10 @@ from urwid import ACTIVATE
 from urwid.util import is_mouse_press
 
 # todo: remove ExampleItem & ListRequest, is only for debug
-from .RequestForm import RequestForm
-from ..listDownloadSrc.userRequestSubSystem import RequestContainer, ListRequest
-from ..listDownloadSrc.downloadSubSystem import DownloadItem, ExampleItem
+from .requestTypeFormsWidget.ListRequestForm import ListRequestForm
+from ..listDownloadSrc.DownloadItem import DownloadItem
+from ..listDownloadSrc.requestTypes import RequestContainer
+from ..listDownloadSrc.requestTypes.ListRequest import ListRequest
 from ..listDownloadSrc.utilityFunction import bytesConvert
 
 
@@ -176,7 +179,7 @@ class RequestContainerDisplay(urwid.PopUpLauncher):
         #         urwid.connect_signal(self.popUpWidgetRef, 'close', lambda button: self.close_pop_up())
         super(RequestContainerDisplay, self).__init__(top)
         # todo: quando ci saranno più tipi di download, specializzare i form
-        self.popUpWidgetRef = RequestForm(formCompleteNotify=self.updateRequestListDownload_callback)
+        self.popUpWidgetRef = ListRequestForm(formCompleteNotify=self.updateRequestListDownload_callback)
 
     def create_pop_up(self):  # Genera in loco un widget, e in questo caso assegna al pulsante la chiusura
         urwid.connect_signal(self.popUpWidgetRef, 'close', lambda button: self.close_pop_up())
@@ -194,9 +197,9 @@ class RequestContainerDisplay(urwid.PopUpLauncher):
             self.open_pop_up()
         return key
 
-    def updateRequestListDownload_callback(self, basePath, endPath, startIndex, endIndex, digit=2):
-        rc = ListRequest(basePath, endPath, startIndex, endIndex, digit)
-        self.dad.changeRequest(self.rc, rc)
+    def updateRequestListDownload_callback(self, rcNew):
+        self.dad.changeRequest(self.rc, rcNew)
+        self.rc = rcNew
 
     def generateSubBranch(self):  # Generate subBranch for the tree
         self.subBranch = []
@@ -263,6 +266,7 @@ class DownloadTree(TreeBox):
             index = self.rcList.index(rc)
         except:
             print("Index not found")
+            time.sleep(2)
             return
         self.rcList.pop(index)
         self.requestTreeList.pop(index)
