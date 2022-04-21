@@ -1,5 +1,6 @@
 import sys
-from .DownloadItem import *
+
+from src.listDownloadSrc.DownloadItem import defaultDir
 
 
 class ParserClass:

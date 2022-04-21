@@ -38,4 +38,3 @@ class PopUpContainer(urwid.PopUpLauncher):
 
     def get_pop_up_parameters(self):  # assegna posizione relativa rispetto pulsante
         return self.widgetSizeRef
-

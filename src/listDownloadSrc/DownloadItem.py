@@ -1,10 +1,12 @@
-from enum import Enum, auto
 import platform
+from enum import Enum, auto
 
-try:
-    from .utilityFunction import *  # module include
-except:
-    from utilityFunction import *  # local main include
+from src.listDownloadSrc.utilityFunction import *  # local main include
+
+# try:
+#     from .utilityFunction import *  # module include
+# except:
+#     from src.listDownloadSrc.utilityFunction import *  # local main include
 
 debug: bool = True
 defaultDir: str = "./listDownload/"
@@ -17,6 +19,7 @@ def changeDefaultDir(newDir) -> None:
         raise Exception("newDir: \"" + newDir + "\" isn't a Creatable directory, check your privilege")
 
     defaultDir = newDir
+
 
 def getDefaultDir() -> str:
     return defaultDir
@@ -211,8 +214,6 @@ class DownloadItem:
 
 ExampleItem = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", "./example/",
                            True)
-
-
 
 if __name__ == '__main__':
     item1 = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg")

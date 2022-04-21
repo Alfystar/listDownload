@@ -1,6 +1,8 @@
-from .CommandMenu import *
-from .DownloadTree import *
-from ..listDownloadSrc.requestTypes.ListRequest import ListRequest
+import urwid
+
+from src.listDownloadSrc.requestTypes.ListRequest import ListRequest
+from src.tuiSrc.CommandMenu import CommandMenu
+from src.tuiSrc.treeView.DownloadTree import *
 
 
 class MainWidget(urwid.WidgetWrap):

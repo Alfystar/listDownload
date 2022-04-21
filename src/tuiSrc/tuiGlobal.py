@@ -63,3 +63,21 @@ def coolButton(caption):
     super(urwid.Button, buttonCool).__init__(
         urwid.AttrMap(urwid.SelectableIcon([u'  \N{BULLET} ', caption], 2), None, 'selected'))
     return buttonCool
+
+
+# We use selectable Text widgets for our example..
+# Selezionabili ma non modificabili, se non fossero selezionabili, il cursore li salterebbe!
+
+class FocusableText(urwid.WidgetWrap):
+    """Selectable Text used for nodes in our example"""
+
+    def __init__(self, txt):
+        t = urwid.Text(txt)
+        w = urwid.AttrMap(t, 'DownloadItem', 'DownloadItemFocus')
+        urwid.WidgetWrap.__init__(self, w)
+
+    def selectable(self):
+        return True
+
+    def keypress(self, size, key):
+        return key

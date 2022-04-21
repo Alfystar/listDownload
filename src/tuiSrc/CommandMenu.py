@@ -13,9 +13,9 @@ class CommandMenu(urwid.WidgetPlaceholder):
         choices = [("Add Download", requestForm, requestForm.getDimension()),
                    # ("Change Download", self.add_Request),
                    ("Global Setting", None, None,),
-                   ("Save Setting",  None, None,),
-                   ("Load Setting",  None, None,),
-                   ("Start Download",  None, None,),
+                   ("Save Setting", None, None,),
+                   ("Load Setting", None, None,),
+                   ("Start Download", None, None,),
                    ]
         super().__init__(urwid.Padding(self.menu(u'Command', choices), left=2, right=2))
 
@@ -28,7 +28,7 @@ class CommandMenu(urwid.WidgetPlaceholder):
 
         # Draw the element passed form choices
         for c in choices:
-            button = PopUpContainer(coolButton(c[0]),'click', c[1], c[2])
+            button = PopUpContainer(coolButton(c[0]), 'click', c[1], c[2])
             body.append(urwid.AttrMap(button, None, focus_map='reversed'))
         return urwid.ListBox(urwid.SimpleFocusListWalker(body))
 
