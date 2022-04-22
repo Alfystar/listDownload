@@ -19,7 +19,7 @@ class PopUpContainer(urwid.PopUpLauncher):
     popUpWidgetRef = PopUpDialogDefault()
     widgetSizeRef = {'left': 0, 'top': -2, 'overlay_width': 60, 'overlay_height': 15}
 
-    def __init__(self, popUpActivatorWidget, openSignalName='click', popUpWidget=None, popUpWidgetSize=None):
+    def __init__(self, popUpActivatorWidget, openSignalName='click',initFunction=None, popUpWidget=None, popUpWidgetSize=None):
         super(PopUpContainer, self).__init__(popUpActivatorWidget)
 
         # Riassegno le variabili passate
@@ -29,7 +29,7 @@ class PopUpContainer(urwid.PopUpLauncher):
             self.widgetSizeRef = popUpWidgetSize
 
         # Quando l'attivatore emette il segnale di apertura, io apro il popup
-        urwid.connect_signal(popUpActivatorWidget, openSignalName, lambda button: (self.open_pop_up()))
+        urwid.connect_signal(popUpActivatorWidget, openSignalName, lambda activator: (initFunction(), self.open_pop_up()))
 
     def create_pop_up(self):  # deve ritornare il widget da assegnare come popup
         # Collego il segnale di chiusura del widget popup alla funzione di chiusura del popup

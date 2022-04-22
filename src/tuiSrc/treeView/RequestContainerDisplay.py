@@ -14,7 +14,7 @@ class RequestContainerDisplay(urwid.WidgetWrap):
     dad = None  # type 'DownloadTree' normally
     subBranch = []
 
-    # Download Display Objects
+    # Download Display Objects, instantiate in init funct to be different for all instance
     info: urwid.Text = None
     bar: urwid.ProgressBar = None
     speed: urwid.Text = None
@@ -23,15 +23,10 @@ class RequestContainerDisplay(urwid.WidgetWrap):
     popUpWidgetRef = None
 
     def __init__(self, rc: RequestContainer, dad):
-        self.rc = rc
         self.dad = dad
-        self.info = urwid.Text(
-            self.rc.RequestType + "  " + self.rc.RequestName + "  " + self.rc.RequestInfo + "\nin: " + self.rc.RequestSavePath)
+        self.info = urwid.Text("")
         self.bar = urwid.ProgressBar('normalTot', 'completeTot', 0, satt='c')
         self.speed = urwid.Text("0B", align='center')
-
-        self.generateSubBranch()
-        self.dataReload()
 
         top = urwid.Columns([('weight', 4, self.info),
                              ('weight', 4, self.bar),
@@ -39,7 +34,9 @@ class RequestContainerDisplay(urwid.WidgetWrap):
                             , dividechars=0)
         top = urwid.AttrMap(top, 'DownloadItem', 'DownloadItemFocus')
 
-        super(RequestContainerDisplay, self).__init__(top)
+        super().__init__(top)
+        self.infoReset(rc)
+
 
     def keypress(self, size, key):
         if key == 'enter':
@@ -53,6 +50,15 @@ class RequestContainerDisplay(urwid.WidgetWrap):
             self.subBranch.append((DownloadDisplay(it, self.dataReload), None))
         if len(self.subBranch) == 0:
             self.subBranch = None
+
+    def infoReset(self, newRc):
+        self.rc = newRc
+        self.info.set_text(
+            self.rc.RequestType + "  " + self.rc.RequestName + "  " + self.rc.RequestInfo + "\nin: " + self.rc.RequestSavePath)
+        self.dataReload()
+        self.generateSubBranch()
+
+
 
     def dataReload(self):
         memTot = 0

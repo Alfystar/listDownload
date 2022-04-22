@@ -32,6 +32,7 @@ class MainWidget(urwid.WidgetWrap):
         # todo: da rimuovere, presenti solo per debug
         RequestList = [ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5),
                        ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 15, 20)]
+        # RequestList = []
         self.downloadTreeView = DownloadTree(RequestList)
         leftSide = urwid.Overlay(self.downloadTreeView, urwid.SolidFill("-"),
                                  align='left', width=('relative', 100),
