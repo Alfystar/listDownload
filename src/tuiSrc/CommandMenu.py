@@ -28,7 +28,7 @@ class CommandMenu(urwid.WidgetPlaceholder):
 
         # Draw the element passed form choices
         for c in choices:
-            button = PopUpContainer(coolButton(c[0]), 'click', c[1], c[2])
+            button = PopUpContainer(coolButton(c[0]), 'click',None, c[1], c[2])
             body.append(urwid.AttrMap(button, None, focus_map='reversed'))
         return urwid.ListBox(urwid.SimpleFocusListWalker(body))
 
