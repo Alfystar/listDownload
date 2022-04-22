@@ -24,7 +24,7 @@ class DownloadTree(TreeBox):
     # rcList: list = []  # List of the different RequestContainer, used to generate theirs item list
 
     tree = None  # Global Object for the tree
-    treeNodeList = []  # List of the Tree-nodes typically compose by RequestContainerDisplay & DownloadDisplay
+    treeNodeList = []   # List of the Tree-nodes typically compose by RequestContainerDisplay & DownloadDisplay
 
     # TreeBox := Is the final widget
     # NestedTree := Permit to merge different type of tree together
@@ -46,13 +46,6 @@ class DownloadTree(TreeBox):
             self.addRequest(rc)
 
     def addRequest(self, rc: RequestContainer, index=-1):
-        # if index == -1:
-        #     self.rcList.append(rc)
-        # else:
-        #     self.rcList.insert(index, rc)
-
-        # rc.registerChangeNotify(self.rcNotify)
-
         rcd = RequestContainerDisplay(rc, self)
         editForm = ListRequestForm(formCompleteNotify=rcd.infoReset)
         openFunc = lambda: (

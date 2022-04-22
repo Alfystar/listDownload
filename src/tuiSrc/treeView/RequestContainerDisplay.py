@@ -45,7 +45,7 @@ class RequestContainerDisplay(urwid.WidgetWrap):
         return key
 
     def generateSubBranch(self):  # Generate subBranch for the tree
-        self.subBranch = []
+        self.subBranch.clear()
         for it in self.rc.generateItem():
             self.subBranch.append((DownloadDisplay(it, self.dataReload), None))
         if len(self.subBranch) == 0:
@@ -57,6 +57,7 @@ class RequestContainerDisplay(urwid.WidgetWrap):
             self.rc.RequestType + "  " + self.rc.RequestName + "  " + self.rc.RequestInfo + "\nin: " + self.rc.RequestSavePath)
         self.dataReload()
         self.generateSubBranch()
+        self.dad.refresh()
 
 
 
