@@ -2,6 +2,7 @@
 This class is the DAD for specific group of downloading file, it contains the sub level download items
 """
 import urwid
+from urwid.util import is_mouse_press
 
 from src.listDownloadSrc.requestTypes.RequestContainer import RequestContainer
 from src.listDownloadSrc.utilityFunction import bytesConvert
@@ -12,7 +13,7 @@ class RequestContainerDisplay(urwid.WidgetWrap):
     signals = ['click']
     rc: RequestContainer = None
     dad = None  # type 'DownloadTree' normally
-    subBranch = []
+    subBranch = None
 
     # Download Display Objects, instantiate in init funct to be different for all instance
     info: urwid.Text = None
@@ -24,6 +25,7 @@ class RequestContainerDisplay(urwid.WidgetWrap):
 
     def __init__(self, rc: RequestContainer, dad):
         self.dad = dad
+        self.subBranch = []
         self.info = urwid.Text("")
         self.bar = urwid.ProgressBar('normalTot', 'completeTot', 0, satt='c')
         self.speed = urwid.Text("0B", align='center')
@@ -36,13 +38,6 @@ class RequestContainerDisplay(urwid.WidgetWrap):
 
         super().__init__(top)
         self.infoReset(rc)
-
-
-    def keypress(self, size, key):
-        if key == 'enter':
-            self._emit('click')
-            return None
-        return key
 
     def generateSubBranch(self):  # Generate subBranch for the tree
         self.subBranch.clear()
@@ -59,8 +54,6 @@ class RequestContainerDisplay(urwid.WidgetWrap):
         self.generateSubBranch()
         self.dad.refresh()
 
-
-
     def dataReload(self):
         memTot = 0
         memCur = 0
@@ -76,4 +69,18 @@ class RequestContainerDisplay(urwid.WidgetWrap):
         self.speed.set_text(bytesConvert(curSpeed) + "/s")
 
     def selectable(self):
+        return True
+
+    def keypress(self, size, key):
+        if key == 'enter':
+            self._emit('click')
+            return None
+        return key
+
+    def mouse_event(self, size, event, button, x, y, focus):
+        """Send 'click' signal on right button press"""
+        if button != 1 or not is_mouse_press(event):
+            return False
+
+        self._emit('click')
         return True

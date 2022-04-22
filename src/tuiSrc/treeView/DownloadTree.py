@@ -78,18 +78,20 @@ class DownloadTree(TreeBox):
     #     return
 
     def keypress(self, size, key):
+        # Go back to the command area if in top level tree
+        # First get the current focus
+        # focus = self.get_focus()
         # UpperCase the "c" and "e" key to open the tree
         if key == "c" or key == "e":
             key = key.upper()
         super().keypress(size, key)
 
-        # Go back to the command area if in top level tree
-        # First get the current focus
-        focus = self.get_focus()
-        # Finaly, if key was 'left' and focus no change than i'm on the root and the user want go out
-        if key == 'left' and focus == self.get_focus():
-            return key
 
+        # # Finaly, if key was 'left' and focus no change than i'm on the root and the user want go out
+        # if key == 'left' and focus == self.get_focus():
+        #     return key
+
+        return key
     # Notify Callback
     # def rcNotify(self, rcNotify: RequestContainer):
     #     # todo: Quando rc notifica il proprio cambiamento, questa funzione deve richiamare generateTree e riassegnarla

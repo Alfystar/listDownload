@@ -65,9 +65,7 @@ class DownloadDisplay(urwid.WidgetWrap):
         return super().keypress(size, key)
 
     def mouse_event(self, size, event, button, x, y, focus):
-        """
-        Send 'click' signal on button 1 press.
-        """
+        """Send 'click' signal on right button press"""
         if button != 1 or not is_mouse_press(event):
             return False
 
