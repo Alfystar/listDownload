@@ -75,6 +75,9 @@ class RequestContainerDisplay(urwid.WidgetWrap):
         if key == 'enter':
             self._emit('click')
             return None
+        if key == "d" or key == "D":
+            self.dad.rmRequest(self)
+            return None
         return key
 
     def mouse_event(self, size, event, button, x, y, focus):

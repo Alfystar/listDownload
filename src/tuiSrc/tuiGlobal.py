@@ -71,13 +71,14 @@ def coolButton(caption):
 class FocusableText(urwid.WidgetWrap):
     """Selectable Text used for nodes in our example"""
 
-    def __init__(self, txt):
+    def __init__(self, txt, sel=True):
         t = urwid.Text(txt)
         w = urwid.AttrMap(t, 'DownloadItem', 'DownloadItemFocus')
         urwid.WidgetWrap.__init__(self, w)
+        self._selectable=sel
 
     def selectable(self):
-        return True
+        return self._selectable
 
     def keypress(self, size, key):
         return key

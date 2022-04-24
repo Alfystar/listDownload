@@ -45,9 +45,9 @@ class MainWidget(urwid.WidgetWrap):
 
     def makeFooter(self):
         return urwid.LineBox(urwid.Pile([
-            urwid.Text("Program key"),
-            urwid.Text("CommandList := ←↑↓→ navigate, 'Enter' to select form button."),
-            urwid.Text("DownloadTree:= ←↑↓→ navigate, -/+ collapse/expand, C/E allVariant, '['/']' Same level move."),
+            urwid.Text("Program key ('q' global quit)"),
+            urwid.Text("CommandList := ←↑↓→ navigate, 'Enter' to select form button, 'Esc' to exit from the form."),
+            urwid.Text("DownloadTree:= ←↑↓→ navigate, -/+ collapse/expand, C/E allVariant, '['/']' Same level move, 'd' delete request."),
             # urwid.Divider()
         ]))
 

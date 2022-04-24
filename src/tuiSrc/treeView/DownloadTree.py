@@ -24,7 +24,7 @@ class DownloadTree(TreeBox):
     # rcList: list = []  # List of the different RequestContainer, used to generate theirs item list
 
     tree = None  # Global Object for the tree
-    treeNodeList = []   # List of the Tree-nodes typically compose by RequestContainerDisplay & DownloadDisplay
+    treeNodeList = []  # List of the Tree-nodes typically compose by RequestContainerDisplay & DownloadDisplay
 
     # TreeBox := Is the final widget
     # NestedTree := Permit to merge different type of tree together
@@ -34,7 +34,8 @@ class DownloadTree(TreeBox):
     def __init__(self, rcList=None):
 
         # define most out tree
-        self.treeNodeList = [FocusableText('Download List:'), [(FocusableText('...'), None)]]
+        endTree = NestedTree(SimpleTree([(FocusableText('...'), None)]))
+        self.treeNodeList = [FocusableText('Download List:'), [(endTree, None)]]
         self.tree = NestedTree(ArrowTree(SimpleTree([self.treeNodeList])))
         self.tree.collapse_all()
         super().__init__(self.tree)
@@ -58,27 +59,20 @@ class DownloadTree(TreeBox):
         newRequestBranch.collapse_all()
 
         self.treeNodeList[1].insert(index, (newRequestBranch, None))
-
         super().refresh()
 
-    # def rmRequest(self, rcd: RequestContainerDisplay):
-    #     try:
-    #         index = self.rcList.index(rc)
-    #     except:
-    #         print("Index not found")
-    #         time.sleep(2)
-    #         return
-    #     self.rcList.pop(index)
-    #     self.treeNodeList[1].pop(index)
-    #     super().refresh()
-    #     return index
-    #
-    # def changeRequest(self, rcOld, rcNew):
-    #     self.addRequest(rcNew, self.rmRequest(rcOld))
-    #     return
+    def rmRequest(self, rcd: RequestContainerDisplay):
+        # Find the subRequestTree of interest
+        for subRequestTree in self.treeNodeList[1]:
+            # Cerco ricorsivamente dentro tutti i decorator quanti sono i decorator usati
+            rcdIterator = subRequestTree[0]._lookup_entry(subRequestTree[0], []).base_widget
+            if rcdIterator == rcd:
+                self.treeNodeList[1].remove(subRequestTree)
+                break
+        super().refresh()
 
     def keypress(self, size, key):
-        if key == 'left':         # Go back to the command only if in top level tree
+        if key == 'left':  # Go back to the command only if in top level tree
             # Save current focus position (before apply the command)
             focus = self.get_focus()
             super().keypress(size, key)
@@ -86,13 +80,12 @@ class DownloadTree(TreeBox):
             if focus == self.get_focus():
                 return key  # Key not use to move
             else:
-                return None # Key used to move the focus
+                return None  # Key used to move the focus
 
         # UpperCase the "c" and "e" key to open the tree
         if key == "c" or key == "e":
             key = key.upper()
         return super().keypress(size, key)
-
 
     # Notify Callback
     # def rcNotify(self, rcNotify: RequestContainer):
