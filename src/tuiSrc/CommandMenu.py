@@ -6,32 +6,36 @@ from src.tuiSrc.tuiGlobal import coolButton
 class CommandMenu(urwid.WidgetPlaceholder):
 
     # ***Event are calls-back, called when button are clicked, they recive: ***Event(button, choiseStr)
-    def __init__(self, addDownloadEvent=None, globSetEvent=None, saveEvent=None, LoadEvent=None,
-                 downloadStartEvent=None):
-        requestForm = ListRequestForm(formCompleteNotify=addDownloadEvent)
+    def __init__(self, addDownloadEvent=None, downloadStartEvent=None):
 
-        choices = [("Add Download", requestForm, requestForm.getDimension()),
-                   # ("Change Download", self.add_Request),
-                   ("Global Setting", None, None,),
-                   ("Save Setting", None, None,),
-                   ("Load Setting", None, None,),
-                   ("Start Download", None, None,),
-                   ]
-        super().__init__(urwid.Padding(self.menu(u'Command', choices), left=2, right=2))
+        body = [urwid.AttrMap(urwid.Text('Command', 'center'), 'heading'), urwid.Divider()]
 
-    def menu(self, title, choices):
-        """
-        @title      := Title of the columns
-        @choices    := List of Tuple, each touple are (ButtonName:str, Callback)
-        """
-        body = [urwid.AttrMap(urwid.Text(title, 'center'), 'heading'), urwid.Divider()]
+        # Add Download
+        addButton = coolButton("Add Download")
+        addForm = ListRequestForm(formCompleteNotify=addDownloadEvent)
+        addPopUp = PopUpContainer(addButton, 'click', None, addForm, addForm.getDimension())
+        body.append(urwid.AttrMap(addPopUp, None, focus_map='reversed'))
 
-        # Draw the element passed form choices
-        for c in choices:
-            button = PopUpContainer(coolButton(c[0]), 'click',None, c[1], c[2])
-            body.append(urwid.AttrMap(button, None, focus_map='reversed'))
-        return urwid.ListBox(urwid.SimpleFocusListWalker(body))
+        # GlobalSetting
+        globButton = coolButton("Global Setting")
+        globPopUp = PopUpContainer(globButton)
+        body.append(urwid.AttrMap(globPopUp, None, focus_map='reversed'))
 
+        # Save Setting
+        saveButton = coolButton("Save Setting")
+        savePopUp = PopUpContainer(saveButton)
+        body.append(urwid.AttrMap(savePopUp, None, focus_map='reversed'))
+
+        # Start Download
+        startButton = coolButton("Start Download")
+        if downloadStartEvent is not None:
+            urwid.connect_signal(startButton, 'click', downloadStartEvent)
+        body.append(urwid.AttrMap(startButton, None, focus_map='reversed'))
+
+        listCommand = urwid.ListBox(urwid.SimpleFocusListWalker(body))
+        super().__init__(urwid.Padding(listCommand, left=2, right=2))
+
+    # Debug Event
     def item_chosen(self, button, choice):
         response = urwid.Text([u'You chose "', choice, u'"\n'])
         done = urwid.Button(u'Ok')

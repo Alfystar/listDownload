@@ -32,8 +32,9 @@ class DownloadTree(TreeBox):
     # SimpleTree := Tree data structure in concrete
 
     def __init__(self, rcList=None):
-
-        # define most out tree
+        # Define the base shape of the tree (with no element)
+        # last element have to be a NestedTree,
+        # otherwise during deletion of node the library isn't able to recreate the structure
         endTree = NestedTree(SimpleTree([(FocusableText('...'), None)]))
         self.treeNodeList = [FocusableText('Download List:'), [(endTree, None)]]
         self.tree = NestedTree(ArrowTree(SimpleTree([self.treeNodeList])))
@@ -70,6 +71,21 @@ class DownloadTree(TreeBox):
                 self.treeNodeList[1].remove(subRequestTree)
                 break
         super().refresh()
+
+    def downloadStart(self):
+        items = []
+        for subRequestTree in self.treeNodeList[1]:
+            # Cerco ricorsivamente dentro tutti i decorator quanti sono i decorator usati
+            rcdIterator = subRequestTree[0]._lookup_entry(subRequestTree[0], []).base_widget
+            try:
+                for rc in rcdIterator.subBranch:
+                    items.append(rc[0].item)
+                    a=1
+            except:
+                # Era il FocusableText finale, lo evito
+                pass
+        return items
+
 
     def keypress(self, size, key):
         if key == 'left':  # Go back to the command only if in top level tree

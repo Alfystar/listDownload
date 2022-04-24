@@ -8,7 +8,7 @@ from src.listDownloadSrc.utilityFunction import *  # local main include
 # except:
 #     from src.listDownloadSrc.utilityFunction import *  # local main include
 
-debug: bool = True
+debug: bool = False
 defaultDir: str = "./listDownload/"
 
 
@@ -143,7 +143,8 @@ class DownloadItem:
             if self.filePolicy == DownloadPolicy.Ov:
                 wgetOption += " "
 
-        print("\nDownload: " + self.url + "\n\t Start " + self.savePath)
+        if debug:
+            print("\nDownload: " + self.url + "\n\t Start " + self.savePath)
         download_cmd: str = ""
         if platform.system() == "Linux":
             download_cmd = "wget " + wgetOption + "--output-document \"" + self.savePath + "\" " + self.url
@@ -175,15 +176,19 @@ class DownloadItem:
         else:
             print("OS not Supported")
         # todo: ottenere il return code dei terminali in base al successo o meno del download
-        print("\n\t END " + self.savePath)
-        if retCode == 0:
+        if debug:
+            print("\n\t END " + self.savePath)
+        if retCode == 0 or retCode > 255:
+            self.totalSize = 1;
+            self.downloadedSize = 1;
+            self.sendCompleteUpdateNotify()
             return True
         else:
             return False
 
     def downloadStatus(self) -> float:
         if self.totalSize != 0:
-            return self.downloadedSize / self.totalSize
+            return (self.downloadedSize * 100) / self.totalSize
         else:
             return 0
 

@@ -1,3 +1,6 @@
+import time
+import threading
+
 import urwid
 
 loop: urwid.MainLoop = None
@@ -40,6 +43,14 @@ focus_map = {
     'line': 'focus line'}
 
 
+
+
+
+def refreshScreen(mainloop):
+    while 1:
+        mainloop.draw_screen()
+        time.sleep(0.02)
+
 # Creo l'istanza eseguibile
 def uiStart(topWidget):
     global loop
@@ -50,6 +61,8 @@ def uiStart(topWidget):
                           unhandled_input=global_input,
                           pop_ups=True
                           )
+    refresh = threading.Thread(target=refreshScreen, args=(loop,))
+    refresh.start()
     loop.run()
 
 

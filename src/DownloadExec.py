@@ -23,9 +23,9 @@ def downloadList(items: list, pDW: int = 10) -> int:
         t = threading.Thread(target=run_thread, args=[q])
         t.start()
 
-    while not q.empty():
-        time.sleep(1)
-    return nDownload
+    # while not q.empty():
+    #     time.sleep(1)
+    # return nDownload
 
 
 def run_thread(q: queue.SimpleQueue):

@@ -1,5 +1,6 @@
 import urwid
 
+from src.DownloadExec import downloadList
 from src.listDownloadSrc.requestTypes.ListRequest import ListRequest
 from src.tuiSrc.CommandMenu import CommandMenu
 from src.tuiSrc.treeView.DownloadTree import *
@@ -30,15 +31,16 @@ class MainWidget(urwid.WidgetWrap):
 
     def makeBody(self):
         # todo: da rimuovere, presenti solo per debug
-        RequestList = [ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5),
-                       ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 15, 20)]
+        RequestList = [ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 1, 5, 1),
+                       ListRequest("https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", ".pdf", 15, 20, 1)]
         # RequestList = []
         self.downloadTreeView = DownloadTree(RequestList)
         leftSide = urwid.Overlay(self.downloadTreeView, urwid.SolidFill("-"),
                                  align='left', width=('relative', 100),
                                  valign='bottom', height=('relative', 100),
                                  top=1)
-        rightSide = CommandMenu(addDownloadEvent=self.addRequestComplete_callBack)
+        rightSide = CommandMenu(addDownloadEvent=self.addRequestComplete_callBack,
+                                downloadStartEvent=self.downloadStart_slot)
 
         top = urwid.Columns([('weight', 2, rightSide), ('weight', 7, leftSide)])
         return top
@@ -47,7 +49,8 @@ class MainWidget(urwid.WidgetWrap):
         return urwid.LineBox(urwid.Pile([
             urwid.Text("Program key ('q' global quit)"),
             urwid.Text("CommandList := ←↑↓→ navigate, 'Enter' to select form button, 'Esc' to exit from the form."),
-            urwid.Text("DownloadTree:= ←↑↓→ navigate, -/+ collapse/expand, C/E allVariant, '['/']' Same level move, 'd' delete request."),
+            urwid.Text(
+                "DownloadTree:= ←↑↓→ navigate, -/+ collapse/expand, C/E allVariant, '['/']' Same level move, 'd' delete request."),
             # urwid.Divider()
         ]))
 
@@ -62,3 +65,7 @@ class MainWidget(urwid.WidgetWrap):
         except Exception as e:
             return str(e)
         return True
+
+    def downloadStart_slot(self, obj):
+        items = self.downloadTreeView.downloadStart()
+        downloadList(items)
