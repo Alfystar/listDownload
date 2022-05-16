@@ -62,8 +62,9 @@ class RequestContainerDisplay(urwid.WidgetWrap):
             memTot += el[0].item.totalSize
             memCur += el[0].item.downloadedSize
             curSpeed += el[0].item.currentSpeed
+
         if (memTot != 0):
-            self.bar.set_completion(memCur / memTot)
+            self.bar.set_completion(memCur*100 // memTot)
         else:
             self.bar.set_completion(0)
         self.speed.set_text(bytesConvert(curSpeed) + "/s")

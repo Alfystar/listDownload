@@ -1,4 +1,8 @@
 import platform
+import requests
+import sys
+import time
+
 from enum import Enum, auto
 
 from src.listDownloadSrc.utilityFunction import *  # local main include
@@ -55,6 +59,9 @@ class DownloadItem:
     downloadedSize: int = 0
     currentSpeed: int = 0
 
+    # Connection Obj
+    response: requests = None
+
     # Callback pointer
     downloadUpdateNotify: list = []
     completeUpdateNotify: list = []
@@ -66,12 +73,12 @@ class DownloadItem:
             self.url = url
         else:
             raise Exception("Url isn't a downloadable file")
-        name = extractName2Url(self.url)
+        tmpName = extractName2Url(self.url)
 
         # OutDir extract Data
         if outDir is None:
             outDir = getDefaultDir()
-        self.changeSaving(outDir, name)
+        self.changeSaving(outDir, tmpName)
 
         # Verbose extract Data
         self.verbose = verbose
@@ -79,6 +86,7 @@ class DownloadItem:
         # Calls-back registering
         self.registerDownloadUpdateNotify(chunkUpdateNotify)
         self.registerCompleteUpdateNotify(completeUpdateNotify)
+
 
     def changeSaving(self, path: str = None, new_name: str = None):
         """
@@ -114,6 +122,59 @@ class DownloadItem:
         self.name = new_name
         self.savePath = savePath
         self.fileExist = os.path.isfile(self.savePath)
+
+    def myDownload(self) -> bool:
+        """
+        This Function return true if file are effectively downloaded
+        """
+
+        if self.outDirDefault:  # Reload last global name
+            self.changeSaving()
+
+        # Create the Download Directory
+        try:
+            os.makedirs(self.outDir)
+        except FileExistsError:
+            # Nop all Ok
+            pass
+        except Exception as e:
+            print("os.makedirs get Error:", e)
+
+        # Download Policy based on the policy
+        if self.fileExist:
+            # If exist, the result depend form the policy chosen
+            if self.filePolicy == DownloadPolicy.Ig:
+                return False
+            if self.filePolicy == DownloadPolicy.DN:
+                # wgetOption += "-nc "  # --no-clobber if file is present, check the time-stamp
+                pass
+            if self.filePolicy == DownloadPolicy.Ov:
+                # wgetOption += " "
+                pass
+
+        if debug:
+            print("\nDownload: " + self.url + "\n\t Start " + self.savePath)
+
+        # Information Download
+        start = time.perf_counter()
+        with open(self.savePath, "wb") as f:
+            self.response = requests.get(self.url, stream=True)
+            self.totalSize = int(self.response.headers.get('content-length'))
+
+            if self.totalSize is None:  # no content length header
+                f.write(self.response.content)
+                return False
+            else:
+                self.downloadedSize = 0
+                # Connection never close, but "interrupt" is send every chunk, efficient and able to get statistics
+                for data in self.response.iter_content(chunk_size=4096):
+                    self.downloadedSize += len(data)
+                    self.currentSpeed = self.downloadedSize // (time.perf_counter() - start)
+                    f.write(data)
+                    self.sendChunkUpdateNotify()
+        self.currentSpeed = 0
+        self.sendCompleteUpdateNotify()
+        return True
 
     def download(self) -> bool:
         """

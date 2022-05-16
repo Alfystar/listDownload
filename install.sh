@@ -31,7 +31,7 @@ fi
 # urwid is TUI library
 #   @urwidtrees is library based on urwid
 
-sudo pip3 install Django urwid urwidtrees
+sudo pip3 install Django urwid urwidtrees requests
 sudo chmod +x listdownload.py
 
 REPO_DIR=$(pwd)

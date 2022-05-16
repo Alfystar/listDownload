@@ -32,4 +32,5 @@ def run_thread(q: queue.SimpleQueue):
     global nDownload
     while not q.empty():
         it = q.get()
-        nDownload += it.download()
+        # nDownload += it.download()
+        nDownload += it.myDownload()

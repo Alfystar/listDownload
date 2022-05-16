@@ -24,10 +24,12 @@ class DownloadDisplay(urwid.WidgetWrap):
     # Callback
     dataChangeNotify = None  # Call when the item change something, to notify some-other, self.dataChangeNotify(self)
 
-    def __init__(self, item: DownloadItem, selectable: bool = True):
+    def __init__(self, item: DownloadItem, dadUpdateFunction=None, selectable: bool = True):
         self.item = item
         self.item.registerDownloadUpdateNotify(self.downloadNotify)
         self.item.registerCompleteUpdateNotify(self.completeNotify)
+        if dadUpdateFunction is not None:
+            self.dataChangeNotify = dadUpdateFunction
 
         self._selectable = selectable
 
@@ -46,7 +48,7 @@ class DownloadDisplay(urwid.WidgetWrap):
         top = urwid.AttrMap(top, 'DownloadItem', 'DownloadItemFocus')
         super().__init__(top)
 
-        urwid.connect_signal(self, 'click', self.clickEvent)
+        # urwid.connect_signal(self, 'click', self.clickEvent)
 
     def itemUpdateData(self):
         self.name.set_text(" " + self.item.name)
@@ -78,16 +80,20 @@ class DownloadDisplay(urwid.WidgetWrap):
     i = 0
 
     # Click
-    def clickEvent(self, objectEvent):
-        self.i = self.i + 1
-        self.name.set_text(["Cliccato ", str(self.i), " Volte"])
+    # def clickEvent(self, objectEvent):
+    #     self.i = self.i + 1
+    #     self.name.set_text(["Cliccato ", str(self.i), " Volte"])
 
     # Notify Callback
     def downloadNotify(self, objectNotify: DownloadItem):
         self.itemUpdateData()
+        if self.dataChangeNotify is not None:
+            self.dataChangeNotify()
 
     def completeNotify(self, objectNotify: DownloadItem):
         self.itemUpdateData()
+        if self.dataChangeNotify is not None:
+            self.dataChangeNotify()
         # newTop = urwid.Columns([urwid.AttrMap(self.name, 'banner'), self.bar, self.size], dividechars=1)
         # top = urwid.AttrMap(newTop, 'DownloadItem', 'DownloadItemFocus')
         # self._wrapped_widget = top
