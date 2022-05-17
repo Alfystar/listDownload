@@ -20,9 +20,6 @@ class RequestContainerDisplay(urwid.WidgetWrap):
     bar: urwid.ProgressBar = None
     speed: urwid.Text = None
 
-    # PopUp widget
-    popUpWidgetRef = None
-
     def __init__(self, rc: RequestContainer, dad):
         self.dad = dad
         self.subBranch = []
@@ -64,7 +61,7 @@ class RequestContainerDisplay(urwid.WidgetWrap):
             curSpeed += el[0].item.currentSpeed
 
         if (memTot != 0):
-            self.bar.set_completion(memCur*100 // memTot)
+            self.bar.set_completion(memCur * 100 // memTot)
         else:
             self.bar.set_completion(0)
         self.speed.set_text(bytesConvert(curSpeed) + "/s")

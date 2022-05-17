@@ -1,9 +1,8 @@
 import platform
-import requests
-import sys
 import time
-
 from enum import Enum, auto
+
+import requests
 
 from src.listDownloadSrc.utilityFunction import *  # local main include
 
@@ -63,11 +62,12 @@ class DownloadItem:
     response: requests = None
 
     # Callback pointer
+    startDownloadNotiy: list = []
     downloadUpdateNotify: list = []
     completeUpdateNotify: list = []
 
     def __init__(self, url: str, outDir: str = None, verbose: bool = False,
-                 chunkUpdateNotify=None, completeUpdateNotify=None):
+                 startDownloadNotiy=None, chunkUpdateNotify=None, completeNotify=None):
         # Url extract Data
         if is_string_an_url(url):
             self.url = url
@@ -84,9 +84,9 @@ class DownloadItem:
         self.verbose = verbose
 
         # Calls-back registering
+        self.registerStartDownloadNotify(startDownloadNotiy)
         self.registerDownloadUpdateNotify(chunkUpdateNotify)
-        self.registerCompleteUpdateNotify(completeUpdateNotify)
-
+        self.registerCompleteUpdateNotify(completeNotify)
 
     def changeSaving(self, path: str = None, new_name: str = None):
         """
@@ -127,6 +127,8 @@ class DownloadItem:
         """
         This Function return true if file are effectively downloaded
         """
+
+        self.sendStartDownloadNotify()
 
         if self.outDirDefault:  # Reload last global name
             self.changeSaving()
@@ -180,6 +182,8 @@ class DownloadItem:
         """
         This Function return true if file are effectively downloaded
         """
+
+        self.sendStartDownloadNotify()
 
         if self.outDirDefault:  # Reload last global name
             self.changeSaving()
@@ -260,22 +264,33 @@ class DownloadItem:
         return bytesConvert(self.currentSpeed) + "/s"
 
     # Register CallBack function Zone
+
+    def registerCallBack(self, callList, functPointer):
+        if functPointer is not None:
+            callList.append(functPointer)
+
+    def registerStartDownloadNotify(self, startNotify):
+        self.registerCallBack(self.startDownloadNotiy, startNotify)
+
     def registerDownloadUpdateNotify(self, chunkUpdateNotify):
-        if chunkUpdateNotify is not None:
-            self.downloadUpdateNotify.append(chunkUpdateNotify)
+        self.registerCallBack(self.downloadUpdateNotify, chunkUpdateNotify)
 
     def registerCompleteUpdateNotify(self, completeUpdateNotify):
-        if completeUpdateNotify is not None:
-            self.completeUpdateNotify.append(completeUpdateNotify)
+        self.registerCallBack(self.completeUpdateNotify, completeUpdateNotify)
 
     # Send CallBack function Zone
-    def sendChunkUpdateNotify(self):
-        for call in self.downloadUpdateNotify:
+    def sendNotify(self, list):
+        for call in list:
             call(self)
 
+    def sendStartDownloadNotify(self):
+        self.sendNotify(self.startDownloadNotiy)
+
+    def sendChunkUpdateNotify(self):
+        self.sendNotify(self.downloadUpdateNotify)
+
     def sendCompleteUpdateNotify(self):
-        for call in self.completeUpdateNotify:
-            call(self)
+        self.sendNotify(self.completeUpdateNotify)
 
 
 ExampleItem = DownloadItem("https://static.djangoproject.com/img/fundraising-heart.cd6bb84ffd33.svg", "./example/",

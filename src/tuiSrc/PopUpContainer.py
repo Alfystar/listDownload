@@ -31,7 +31,7 @@ class PopUpContainer(urwid.PopUpLauncher):
 
         # Quando l'attivatore emette il segnale di apertura, io apro il popup
         urwid.connect_signal(popUpActivatorWidget, openSignalName, lambda activator: (
-        initFunction() if initFunction is not None else False, self.open_pop_up()))
+            initFunction() if initFunction is not None else False, self.open_pop_up()))
 
     def create_pop_up(self):  # deve ritornare il widget da assegnare come popup
         # Collego il segnale di chiusura del widget popup alla funzione di chiusura del popup

@@ -7,7 +7,6 @@ class CommandMenu(urwid.WidgetPlaceholder):
 
     # ***Event are calls-back, called when button are clicked, they recive: ***Event(button, choiseStr)
     def __init__(self, addDownloadEvent=None, downloadStartEvent=None):
-
         body = [urwid.AttrMap(urwid.Text('Command', 'center'), 'heading'), urwid.Divider()]
 
         # Add Download

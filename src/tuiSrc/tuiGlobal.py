@@ -1,5 +1,5 @@
-import time
 import threading
+import time
 
 import urwid
 
@@ -43,13 +43,11 @@ focus_map = {
     'line': 'focus line'}
 
 
-
-
-
 def refreshScreen(mainloop):
     while 1:
         mainloop.draw_screen()
         time.sleep(0.02)
+
 
 # Creo l'istanza eseguibile
 def uiStart(topWidget):
@@ -88,7 +86,7 @@ class FocusableText(urwid.WidgetWrap):
         t = urwid.Text(txt)
         w = urwid.AttrMap(t, 'DownloadItem', 'DownloadItemFocus')
         urwid.WidgetWrap.__init__(self, w)
-        self._selectable=sel
+        self._selectable = sel
 
     def selectable(self):
         return self._selectable

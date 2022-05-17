@@ -14,11 +14,10 @@ class ListRequestForm(urwid.WidgetWrap):
         listBody = [urwid.AttrMap(urwid.Text("Parametri", 'center'), 'heading'), urwid.Divider()]
 
         # Input cell
-        self.basePath = urwid.Edit(u"BasePath   := ")
-        self.endPath = urwid.Edit(u"EndPath    := ")
+        self.parametricPath = urwid.Edit(
+            u"              «Use '#' for index, as many as the minimum digit you need»\nPath       := ")
         self.startIndexText = urwid.Edit(u"StartIndex := ")
         self.endIndexText = urwid.Edit(u"EndIndex   := ")
-        self.nDigitText = urwid.Edit(u"Digit n°   := ")
 
         self.resetParam()
 
@@ -29,11 +28,9 @@ class ListRequestForm(urwid.WidgetWrap):
         # Info Area
         self.infoText = urwid.Text("Info Area:\n", align='center')
 
-        listBody.append(self.basePath)
-        listBody.append(self.endPath)
+        listBody.append(self.parametricPath)
         listBody.append(self.startIndexText)
         listBody.append(self.endIndexText)
-        listBody.append(self.nDigitText)
         listBody.append(urwid.Divider())
         listBody.append(self.enterButton)
         listBody.append(urwid.Divider())
@@ -45,31 +42,23 @@ class ListRequestForm(urwid.WidgetWrap):
         super().__init__(urwid.LineBox(list))
 
     # todo: finito lo sviluppo mettere i corretti valori di default
-    def resetParam(self, base="https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_", end=".pdf", startIndex=0,
-                   endIndex=0, digit=2):
+    def resetParam(self, base="https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_#.pdf", startIndex=0,
+                   endIndex=0):
         # default Val
-        self.basePath.set_edit_text(base)
-        self.endPath.set_edit_text(end)
-
+        self.parametricPath.set_edit_text(base)
         self.startIndexText.set_edit_text(str(startIndex))
         self.endIndexText.set_edit_text(str(endIndex))
-        self.nDigitText.set_edit_text(str(digit))
 
     def getDimension(self):
         return {'left': 0, 'top': -2, 'overlay_width': 90, 'overlay_height': 15}
 
     def formComplete(self, button):
-        basePathStr = self.basePath.get_edit_text()
-        endPathStr = self.endPath.get_edit_text()
+        parametricPathStr = self.parametricPath.get_edit_text()
         startIndexStr = self.startIndexText.get_edit_text()
         endIndexStr = self.endIndexText.get_edit_text()
-        nDigitStr = self.nDigitText.get_edit_text()
 
-        if len(basePathStr) == 0:
-            self.infoText.set_text("Info Area:\nBasePath Missing, please add base_url")
-            return
-        if len(endPathStr) == 0:
-            self.infoText.set_text("Info Area:\nEndPath Missing, please add end_url")
+        if len(parametricPathStr) == 0:
+            self.infoText.set_text("Info Area:\nParametricPath Missing, please add parametric_url")
             return
         if not startIndexStr.isnumeric():
             self.infoText.set_text("Info Area:\nStart index isn't number, please insert a number")
@@ -77,13 +66,10 @@ class ListRequestForm(urwid.WidgetWrap):
         if not endIndexStr.isnumeric():
             self.infoText.set_text("Info Area:\nEnd index isn't number, please insert a number")
             return
-        if not nDigitStr.isnumeric():
-            self.infoText.set_text("Info Area:\nDigit number isn't number, please insert a number")
-            return
 
         valid = True
         if self.formCompleteNotify is not None:
-            rc = ListRequest(basePathStr, endPathStr, int(startIndexStr), int(endIndexStr), int(nDigitStr))
+            rc = ListRequest(parametricPathStr, int(startIndexStr), int(endIndexStr))
             valid = self.formCompleteNotify(rc)
 
         if type(valid) != str:

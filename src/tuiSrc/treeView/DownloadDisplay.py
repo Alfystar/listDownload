@@ -25,13 +25,14 @@ class DownloadDisplay(urwid.WidgetWrap):
     dataChangeNotify = None  # Call when the item change something, to notify some-other, self.dataChangeNotify(self)
 
     def __init__(self, item: DownloadItem, dadUpdateFunction=None, selectable: bool = True):
-        self.item = item
-        self.item.registerDownloadUpdateNotify(self.downloadNotify)
-        self.item.registerCompleteUpdateNotify(self.completeNotify)
         if dadUpdateFunction is not None:
             self.dataChangeNotify = dadUpdateFunction
 
         self._selectable = selectable
+        self.item = item
+        # self.item.registerStartDownloadNotify(lambda: dadStartNotify() if dadStartNotify is not None else False)
+        self.item.registerDownloadUpdateNotify(self.downloadNotify)
+        self.item.registerCompleteUpdateNotify(self.completeNotify)
 
         self.name = urwid.Text(" " + self.item.name, align='left')
         self.bar = urwid.ProgressBar('normal', 'complete', self.item.downloadStatus(), satt='c')

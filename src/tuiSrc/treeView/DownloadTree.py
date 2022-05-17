@@ -1,6 +1,3 @@
-import time
-
-import urwid
 from urwidtrees.decoration import ArrowTree, CollapsibleArrowTree  # decoration
 from urwidtrees.nested import NestedTree
 from urwidtrees.tree import SimpleTree
@@ -80,12 +77,11 @@ class DownloadTree(TreeBox):
             try:
                 for rc in rcdIterator.subBranch:
                     items.append(rc[0].item)
-                    a=1
+                    a = 1
             except:
                 # Era il FocusableText finale, lo evito
                 pass
         return items
-
 
     def keypress(self, size, key):
         if key == 'left':  # Go back to the command only if in top level tree
