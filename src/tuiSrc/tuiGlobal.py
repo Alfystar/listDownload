@@ -45,7 +45,10 @@ focus_map = {
 
 def refreshScreen(mainloop):
     while 1:
-        mainloop.draw_screen()
+        try:
+            mainloop.draw_screen()
+        except:
+            pass
         time.sleep(0.02)
 
 

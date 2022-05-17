@@ -48,7 +48,7 @@ class DownloadTree(TreeBox):
         rcd = RequestContainerDisplay(rc, self)
         editForm = ListRequestForm(formCompleteNotify=rcd.infoReset)
         openFunc = lambda: (
-            editForm.resetParam(rcd.rc.baseUrl, rcd.rc.endUrl, rcd.rc.startNum, rcd.rc.endNum, rcd.rc.digit))
+            editForm.resetParam(rcd.rc.parametricUrl, rcd.rc.startNum, rcd.rc.endNum))
         popUpBranch = PopUpContainer(rcd, 'click', openFunc, editForm, editForm.getDimension())
 
         branch = (popUpBranch, rcd.subBranch)  # Punto per il sotto livello direttamente la lista corretta

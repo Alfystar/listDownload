@@ -42,8 +42,7 @@ class ListRequestForm(urwid.WidgetWrap):
         super().__init__(urwid.LineBox(list))
 
     # todo: finito lo sviluppo mettere i corretti valori di default
-    def resetParam(self, base="https://www.egr.msu.edu/~khalil/NonlinearSystems/Sample/Lect_#.pdf", startIndex=0,
-                   endIndex=0):
+    def resetParam(self, base="", startIndex=0, endIndex=0):
         # default Val
         self.parametricPath.set_edit_text(base)
         self.startIndexText.set_edit_text(str(startIndex))
